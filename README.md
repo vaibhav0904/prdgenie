@@ -156,7 +156,7 @@ AI, end to end.** That is not a footnote; it is part of the point.
 
 The whole application was built the same way: one story at a time, a test plan before any code,
 and every defect found mid-story written up as its own card instead of being folded into the
-work. **108 stories done, 11 recorded decisions, 60 bug cards closed, 24 open.** The record is in
+work. **109 stories done, 11 recorded decisions, 61 bug cards closed, 24 open.** The record is in
 [`stories/`](stories/) and [`stories/STATUS.md`](stories/STATUS.md), including the parts that went
 badly.
 

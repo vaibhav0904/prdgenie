@@ -470,7 +470,7 @@ export const SLIDES = [
           ['<strong>No number on these slides was written by the AI</strong>', 'every figure is counted from the stored data. A second AI, from a different vendor, judges quality afterwards and gates nothing.'],
         ],
       },
-      { type: 'note', text: 'Built one story at a time: 108 stories done, 11 recorded decisions, and every defect found mid-story became its own card. 60 closed, 24 open and written down.' },
+      { type: 'note', text: 'Built one story at a time: 109 stories done, 11 recorded decisions, and every defect found mid-story became its own card. 61 closed, 24 open and written down.' },
     ],
     command: {
       cmd: '.\\run.cmd check-all.mjs',
