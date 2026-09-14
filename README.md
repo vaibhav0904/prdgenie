@@ -111,6 +111,11 @@ none in `.env` either.
 
 On Windows it is two double-clicks: `1-START-HERE.cmd`, then `2-SET-UP-THE-DEMO.cmd`.
 
+**Before you clone, on Windows:** `git config --global core.longpaths true`. The story cards have
+descriptive filenames — the longest path here is 103 characters — and Windows' 260-character
+limit means a clone into a deep folder fails at checkout with `Filename too long`. A target under
+about 150 characters works without the setting (BUG-083).
+
 ```
 .\run.cmd                             preflight: Node, sqlite, .env, both services, all five doors
 .\run.cmd evals/harness/grade.mjs C6  what the system refuses to do
@@ -151,7 +156,7 @@ AI, end to end.** That is not a footnote; it is part of the point.
 
 The whole application was built the same way: one story at a time, a test plan before any code,
 and every defect found mid-story written up as its own card instead of being folded into the
-work. **105 stories done, 11 recorded decisions, 57 bug cards closed, 24 open.** The record is in
+work. **108 stories done, 11 recorded decisions, 60 bug cards closed, 24 open.** The record is in
 [`stories/`](stories/) and [`stories/STATUS.md`](stories/STATUS.md), including the parts that went
 badly.
 

@@ -73,6 +73,19 @@ if (!SERVICE || !/^https?:\/\//.test(SERVICE)) fail('SERVICE_BASE_URL must be th
 if (/^https?:\/\/(localhost|127\.0\.0\.1)/.test(SERVICE) && !/^https?:\/\/(localhost|127\.0\.0\.1)/.test(N8N)) {
   fail(`SERVICE_BASE_URL is ${SERVICE}, but a hosted n8n cannot reach your localhost. Put the review service behind a public URL or a tunnel (see deliverables/SETUP.md) and use that address.`);
 }
+// WF1 calls its own sibling doors, so n8n has to be able to reach ITSELF at N8N_SELF_URL.
+// On a hosted instance its public URL loops back and the default is right. Behind a Docker port
+// mapping it is not: the host's :5680 is the container's :5678, the dispatch dies with "the
+// service refused the connection", and the only clue is a dead letter. Say so up front (BUG-082).
+if (!process.env.N8N_SELF_URL && /^https?:\/\/(localhost|127\.0\.0\.1)/.test(N8N)) {
+  console.warn(`\n  [warn] N8N_API_URL is ${N8N} and N8N_SELF_URL is unset.`);
+  console.warn('         n8n calls its own doors at that address. If this instance is a container');
+  console.warn("         behind a port mapping, its own address is NOT the host's mapped port, and");
+  console.warn('         the first ingest will fail at "Dispatch: WF2 generate" with a refused');
+  console.warn('         connection. Set N8N_SELF_URL to the address n8n reaches itself on');
+  console.warn('         (usually http://localhost:5678 inside the container).\n');
+}
+
 const providerIds = {};
 for (const [placeholder, [envName, label]] of Object.entries(PROVIDER_PLACEHOLDERS)) {
   const id = process.env[envName]?.trim();
@@ -151,7 +164,11 @@ for (const { file, wf } of exports_) {
     idMap[wf.id] = found.id;
     console.log(`found    ${file.padEnd(28)} "${wf.name}" is ${found.id}${found.active ? ' (active)' : ''}`);
   } else if (DRY) {
-    idMap[wf.id] = `<new id for ${wf.id}>`;
+    // The placeholder must NOT contain the committed id. It used to read `<new id for ${wf.id}>`,
+    // which still contains it as a substring — so the leftover check below saw the id it had just
+    // replaced and threw, and `--dry-run` could never succeed against an instance that did not
+    // already hold the workflows. That is the only instance a dry run is for (BUG-081).
+    idMap[wf.id] = `__NEW_ID_${Object.keys(idMap).length + 1}__`;
     console.log(`create   ${file.padEnd(28)} "${wf.name}" does not exist yet`);
   } else {
     const created = await api('POST', '/workflows', { name: wf.name, nodes: wf.nodes, connections: wf.connections, settings: { executionOrder: 'v1' } });
@@ -223,7 +240,12 @@ for (const { file, wf } of exports_) {
   console.log(`updated  ${file.padEnd(28)} ${id}${wf.active ? '  active' : ''}`);
 }
 
-if (DRY) { console.log('\nDry run. Nothing was sent.'); process.exit(0); }
+// `process.exit()` here tore down the event loop while fetch's keep-alive sockets were still
+// closing, and Windows printed a libuv assertion after a successful run — which reads as a crash
+// to the person who just followed the instructions. Let the process end on its own instead.
+if (DRY) {
+  console.log('\nDry run. Nothing was sent.');
+} else {
 
 // ---- the doors, probed through themselves --------------------------------------------------
 // A GET runs nothing: a webhook door answers 404 with "not registered" only when it is not
@@ -250,3 +272,5 @@ Next, on the machine that runs the review service:
   Then:  .\\run.cmd   (the preflight probes these same doors)
 The form for a demo:  ${N8N}/form/prdgenie-ingest-form`);
 if (bad) fail(`${bad} door(s) not registered. Open ${N8N}, check each workflow is active, then run this again.`);
+
+}

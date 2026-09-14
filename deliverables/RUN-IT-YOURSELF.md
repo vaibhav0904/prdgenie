@@ -44,11 +44,18 @@ section said `.env` drove the address. It did not. That was **BUG-078**.)
 
 ## Setup, in order
 
-### 0. Node 22 or newer
+### 0. Node 22 or newer, and one git setting
 
 ```
 winget install OpenJS.NodeJS.LTS
+git config --global core.longpaths true
 ```
+
+The second line matters **before you clone**. The story cards are named after what they say, so
+the longest path in this repository is 103 characters; Windows stops at 260 and git's default
+refuses the rest. Into a deep folder the clone ends with twenty `Filename too long` lines and
+`unable to checkout working tree`. A target under about 150 characters is fine without it.
+That was **BUG-083**, found by cloning this repository and reading no further.
 
 Then **open a new terminal.** A running shell inherits `PATH` at launch and never re-reads it —
 and VS Code caches it for every terminal it opens, so a new tab is not enough.

@@ -3,8 +3,9 @@
 Two shapes. **A: everything on one machine**, which is the twenty-minute path in
 [`RUN-IT-YOURSELF.md`](RUN-IT-YOURSELF.md). **B: n8n is hosted** — n8n Cloud, or a server you
 have no Docker shell into — and the review service runs wherever n8n can reach it. This page is
-mostly about B, and it ends with a record of which steps were followed from a fresh copy of the
-source on 2026-09-10 and what happened.
+mostly about B, and it ends with two records of the instructions being followed from scratch —
+2026-09-10 from a source archive, and 2026-09-14 from a clone of the public repository against an
+n8n reached only through its API — naming every step that did not work as written.
 
 ## What runs where
 
@@ -161,6 +162,7 @@ substitution: the form is `https://<you>.app.n8n.cloud/form/prdgenie-ingest-form
 | `deploy-hosted` stops at "cannot reach the n8n API" | `N8N_API_URL` wrong, or the key lacks workflow scopes |
 | `SERVICE_BASE_URL is ... localhost` refusal | a hosted n8n cannot reach your machine; use B1 |
 | Doors answer, extraction fails at the first callback | the service is not reachable at `SERVICE_BASE_URL` *from n8n*, or the two `.env` files hold different `INTERNAL_API_KEY`s (401) |
+| The ingest door answers **500 `Error in workflow`** within a second, and `/api/dead-letters` names **`Dispatch: WF2 generate`** with "the service refused the connection" | n8n cannot reach **itself**. WF1 calls its own generate and delta doors at `N8N_SELF_URL`, which defaults to `N8N_API_URL`. Behind a Docker port mapping or a proxy that will not answer its own hostname, that address is wrong from inside n8n. Set `N8N_SELF_URL` and deploy again. |
 | Extraction fails at the provider | the credential id in `.env` is not the one you created, or the key in n8n is wrong |
 | A door answers 404 on the deploy's probe but the workflow is active in the UI | run the deploy again; it deactivates and reactivates, which re-registers webhooks |
 
@@ -192,4 +194,32 @@ keys, because real keys are typed by a person and never by a script.
 **Not tested, and why.** Extraction itself, because that needs real provider keys, which are the
 one thing a script must not hold; n8n Cloud specifically, because the same public API was
 exercised against n8n 2.36.9 self-hosted, and Cloud runs that API; and Linux or macOS for the
+service, where the only difference is typing `node --env-file=.env` instead of `.\run.cmd`.
+
+---
+
+## Followed again from a clone of the public repository, 2026-09-14
+
+The first walk-through started from an unzipped source archive against an n8n that already held
+the workflows. Both of those were kinder than reality. This one starts where a stranger starts:
+`git clone` of the public repository, and an n8n reached **only** through its REST API — no
+container shell, which is the whole difference between shape A and shape B.
+
+| Step | Followed as written? | What happened |
+|---|---|---|
+| `git clone` into a deep folder | **no** | Twenty `Filename too long` errors and `unable to checkout working tree`. Windows, 260-character limit, `core.longpaths` off by default. **BUG-083** — both READMEs now say to set it before cloning |
+| `git clone` into a 52-character path | yes | 850 files, clean |
+| RUN-IT-YOURSELF 0–1: Node, `copy .env.example .env` | yes | `.env.example` names every variable shape B needs, including the two credential ids |
+| B2: create the OpenAI and Gemini credentials, create an API key | yes | Done through the REST API rather than the browser, because this run had no UI session. Same three objects |
+| B3: fill in `.env` | yes | The six variables the page lists, plus `SERVICE_PORT` |
+| **B4: `deploy-hosted.mjs --dry-run`** | **no** | Crashed: `still carries prdgenieWF0llmcall … after rewriting`. The dry-run placeholder contained the id it was standing in for, so the safety check tripped on its own substitution. It could only ever pass on an instance that already held the workflows — which is not what a dry run is for. **BUG-081**, fixed and re-verified against a genuinely empty instance |
+| B4: `deploy-hosted.mjs` for real | yes | Seven workflows created with instance-generated ids, every sub-workflow reference and the error-workflow setting rewritten, the header-auth credential created, all tagged and activated, and all five doors probed and answering |
+| B5: review service, then `.\run.cmd` | yes | Six of six preflight rows green against the hosted instance |
+| `show-fixture.mjs T1` | yes | Printed the hosted form address, not the local default (the BUG-080 fix holding) |
+| **B6: first document through the door** | **no** | `500 Error in workflow` in 0.3s. n8n could not reach **itself**: WF1 dispatches to its own generate door at `N8N_SELF_URL`, and behind a port mapping that address is wrong from inside the container. The system behaved correctly — the run stopped and the error workflow wrote a dead letter naming `Dispatch: WF2 generate` — but nothing pointed the reader at it. **BUG-082**: the deploy now warns on exactly this shape, and the troubleshooting table has a row keyed on the symptom |
+| B6 again, with `N8N_SELF_URL` set | yes | WF1 → WF2 → WF0 ran, the provider refused the dummy key, and the door returned a proper envelope: `needs_review`, reason `llm_unauthorized`, a version born `draft` |
+
+**Still not tested, and why.** A real extraction, because it needs a real provider key, and a key
+is the one thing a script must not hold. n8n Cloud by name, though the same public API was
+exercised against self-hosted 2.36.9 and Cloud runs that API. Linux or macOS for the review
 service, where the only difference is typing `node --env-file=.env` instead of `.\run.cmd`.
