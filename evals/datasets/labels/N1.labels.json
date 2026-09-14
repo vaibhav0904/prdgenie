@@ -1,0 +1,83 @@
+{
+  "fixture_id": "N1",
+  "rule": "Labels written BEFORE any tuning. Never edit labels to match output.",
+  "written": "2026-09-01",
+  "expected_requirements": [
+    {
+      "label_id": "N1-R01",
+      "kind": "functional",
+      "statement": "A dashboard can be filtered by date using one-click presets (last 7, last 30, last 90 days) rather than a calendar picker.",
+      "stakeholder": "unattributed (raw PM notes)",
+      "quotes": [
+        "needs presets not a calendar picker",
+        "last 7 / last 30 / last 90 days as one click"
+      ]
+    },
+    {
+      "label_id": "N1-R02",
+      "kind": "functional",
+      "statement": "A dashboard displays when its data was last refreshed, on the dashboard itself.",
+      "stakeholder": "unattributed (raw PM notes)",
+      "quotes": [
+        "dashboard must show when the data was last refreshed, visible on the dashboard itself"
+      ]
+    },
+    {
+      "label_id": "N1-R03",
+      "kind": "functional",
+      "statement": "A user can set one dashboard as their landing page so it opens on login.",
+      "stakeholder": "unattributed (raw PM notes)",
+      "quotes": [
+        "pin as home.",
+        "user should be able to set one dashboard as their landing page so it opens on login"
+      ]
+    },
+    {
+      "label_id": "N1-R04",
+      "kind": "constraint",
+      "statement": "All Halcyon data must remain in the EU region. Contractual, not a preference.",
+      "stakeholder": "Tom (Sales) (holds the contract clause)",
+      "quotes": [
+        "all Halcyon data has to stay in the EU region"
+      ]
+    },
+    {
+      "label_id": "N1-R05",
+      "kind": "functional",
+      "statement": "A user can search dashboards by name.",
+      "stakeholder": "unattributed (raw PM notes)",
+      "quotes": [
+        "user needs to search dashboards by name"
+      ]
+    },
+    {
+      "label_id": "N1-R06",
+      "kind": "nonfunctional",
+      "statement": "Charts remain readable in black and white; meaning is never encoded in colour alone.",
+      "stakeholder": "Wei (Design)",
+      "quotes": [
+        "charts have to stay readable in black and white",
+        "so no encoding meaning in colour alone"
+      ]
+    }
+  ],
+  "expected_open_questions": [
+    {
+      "label_id": "N1-Q01",
+      "kind": "unanswered",
+      "question": "Does the 'last 30 days' preset mean a rolling 30 days or the calendar month? Written down as a question to ask, never answered.",
+      "quotes": [
+        "does last 30 mean rolling or calendar month. ask Dana"
+      ]
+    },
+    {
+      "label_id": "N1-Q02",
+      "kind": "unanswered",
+      "question": "Marcus asked for a 'what changed since last week' capability and the note-taker could not tell whether he meant changes in the data or changes to the dashboard configuration.",
+      "quotes": [
+        "couldnt tell if he meant the data or the dashboard config. did not write it down as a real ask"
+      ]
+    }
+  ],
+  "notes": "Raw PM notes: no speakers, fragments, shorthand and typos ('becuase', 'cant', 'couldnt', 'abt') left in deliberately. Typos are not to be corrected in raw_text - citations must resolve against the text the door actually stored. THREE DELIBERATE NON-REQUIREMENTS, and an extractor that emits any of them is scoring a false positive: (1) 'autocomplete would be nice, not required' is explicitly declined by the author and must not become a requirement; (2) 'she is worried abt the november date. not a req, just noting the mood' is marked by the author as not a requirement; (3) 'TODO chase Tom re: the Halcyon clause wording' is an action for the author, not a product need. N1-R01 is labeled as one requirement, not two: the preset list and the rejection of the calendar picker are one atomic ask stated across two adjacent fragments, which is why both spans are listed. N1-R04 has one quoted span only; the surrounding lines ('this is contractual not a preference', 'NOT negotiable') qualify it but do not state it, and per the minimal-span rule they are not cited."
+}

@@ -1,0 +1,86 @@
+{
+  "probed_at": "2026-09-03T19:07:19.475Z",
+  "t1_version": 1444,
+  "t2_doc": "DOC-2026-1285",
+  "counts": {
+    "added": 2,
+    "modified": 1,
+    "contradicted": 1,
+    "removed": 0,
+    "new_open_questions": 0
+  },
+  "dropped": [],
+  "churn": {
+    "churned": 0,
+    "of": 4,
+    "items": []
+  },
+  "delta": {
+    "added": [
+      {
+        "subject": "Commenting on charts",
+        "statement": "A user can leave a comment pinned to a specific chart, visible to everyone with access to that dashboard.",
+        "citations": [
+          {
+            "quote": "A user can leave a comment pinned to a specific chart, and everyone with access to that dashboard can see it.",
+            "match_kind": "exact",
+            "start_char": 2650,
+            "end_char": 2759
+          }
+        ]
+      },
+      {
+        "subject": "Scheduled dashboard report recipients and formats",
+        "statement": "A scheduled dashboard report can be sent as a PDF or a CSV, to up to twenty recipients per schedule.",
+        "citations": [
+          {
+            "quote": "So a scheduled dashboard report can be sent as a PDF or a CSV, to up to twenty recipients per schedule.",
+            "match_kind": "exact",
+            "start_char": 2071,
+            "end_char": 2174
+          }
+        ]
+      }
+    ],
+    "modified": [
+      {
+        "req_id": "1444-REQ-001",
+        "prd_quote": "The first chart on a dashboard must render in under two seconds on the largest customer account, Northwind.",
+        "statement": "The first chart on a dashboard must render in under two seconds on a standard workspace, and under four seconds on Northwind's largest workspace.",
+        "citations": [
+          {
+            "quote": "On a normal customer workspace we are at one point four seconds, comfortably inside two. On Northwind's largest workspace we are at six and I do not have a route to two that doesn't involve pre-aggregating everything.",
+            "match_kind": "exact",
+            "start_char": 312,
+            "end_char": 529
+          },
+          {
+            "quote": "Then we move it. The first chart renders in under two seconds on a standard workspace, and under four seconds on Northwind's largest workspace. That is the number now.",
+            "match_kind": "exact",
+            "start_char": 646,
+            "end_char": 813
+          }
+        ],
+        "prd_quote_match": "exact"
+      }
+    ],
+    "contradicted": [
+      {
+        "req_id": "1444-REQ-012",
+        "prd_quote": "ForgeSight must read data only from the existing warehouse; no second database or new pipeline is allowed for the pilot.",
+        "conflict": "The new document states that a separate aggregation store and a nightly pipeline are being introduced, contradicting the no second database or new pipeline constraint.",
+        "citations": [
+          {
+            "quote": "To get four I need to pre-aggregate, and pre-aggregation does not fit in the warehouse. We are standing up a separate aggregation store alongside it, and there is a nightly pipeline that builds it.",
+            "match_kind": "exact",
+            "start_char": 986,
+            "end_char": 1183
+          }
+        ],
+        "prd_quote_match": "exact"
+      }
+    ],
+    "removed": [],
+    "new_open_questions": []
+  }
+}

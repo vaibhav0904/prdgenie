@@ -1,0 +1,104 @@
+{
+  "fixture_id": "T3",
+  "rule": "Labels written BEFORE any tuning. Never edit labels to match output.",
+  "written": "2026-09-01",
+  "expected_requirements": [
+    {
+      "label_id": "T3-R01",
+      "kind": "functional",
+      "statement": "ForgeSight ships prebuilt dashboard templates per industry so a new customer sees their own data on day one instead of an empty grid.",
+      "stakeholder": "Dana (Customer Success)",
+      "quotes": [
+        "So we ship templates.",
+        "ForgeSight should ship prebuilt dashboard templates per industry, so a new customer sees their own data on day one instead of an empty grid."
+      ]
+    },
+    {
+      "label_id": "T3-R02",
+      "kind": "functional",
+      "statement": "A user can duplicate an existing dashboard and edit the copy.",
+      "stakeholder": "Wei (Design)",
+      "quotes": [
+        "a user can duplicate an existing dashboard and edit the copy"
+      ]
+    },
+    {
+      "label_id": "T3-R03",
+      "kind": "nonfunctional",
+      "statement": "An alert email arrives within five minutes of the threshold being crossed.",
+      "stakeholder": "Dana (Customer Success)",
+      "quotes": [
+        "An alert email has to arrive within five minutes of the threshold being crossed."
+      ]
+    },
+    {
+      "label_id": "T3-R04",
+      "kind": "constraint",
+      "statement": "No third-party analytics or tracking scripts may run in the customer-facing app.",
+      "stakeholder": "Priya (Eng Lead)",
+      "quotes": [
+        "No third-party analytics or tracking scripts may run in the customer-facing app.",
+        "No product analytics vendor, no session recorder, nothing that ships a customer's data to a fourth party."
+      ]
+    },
+    {
+      "label_id": "T3-R05",
+      "kind": "functional",
+      "statement": "An admin can see which dashboards have not been opened in the last thirty days.",
+      "stakeholder": "Dana (Customer Success)",
+      "quotes": [
+        "An admin should be able to see which dashboards have not been opened in the last thirty days."
+      ]
+    },
+    {
+      "label_id": "T3-R06",
+      "kind": "constraint",
+      "statement": "The pilot runs with three customer accounts only: Northwind, Meridian and Halcyon.",
+      "stakeholder": "Marcus (Head of Product)",
+      "quotes": [
+        "the pilot runs with three customer accounts only, Northwind, Meridian and Halcyon"
+      ]
+    },
+    {
+      "label_id": "T3-R07",
+      "kind": "constraint",
+      "statement": "The tablet view is out of scope for the pilot. It is expected back in the release after, and Northwind is to be told before their shift supervisors discover it.",
+      "stakeholder": "Marcus (Head of Product)",
+      "quotes": [
+        "I want to cut the tablet view from the pilot.",
+        "Let's call it cut for now.",
+        "I'd want it back in the release after"
+      ]
+    }
+  ],
+  "expected_open_questions": [
+    {
+      "label_id": "T3-Q01",
+      "kind": "conflict",
+      "question": "Tom needs a self-serve email login so prospects can trial ForgeSight; Priya holds that authentication is through the customer's SAML provider only and that ForgeSight stores no credentials. Explicitly left unsettled in the room.",
+      "quotes": [
+        "I need a prospect to be able to create a login with an email address and be inside ForgeSight in two minutes.",
+        "We agreed the opposite of that a week ago.",
+        "I'm not settling that in this meeting."
+      ]
+    },
+    {
+      "label_id": "T3-Q02",
+      "kind": "conflict",
+      "question": "Marcus accepts the industry templates as small; Priya says directly that they are not small. The effort disagreement is talked past rather than settled, and the templates are taken as in scope anyway.",
+      "quotes": [
+        "Both in. They're small.",
+        "The templates are not small, but go on."
+      ]
+    },
+    {
+      "label_id": "T3-Q04",
+      "kind": "unanswered",
+      "question": "A five-minute alert latency on hourly-refreshed data is internally inconsistent. Priya names the inconsistency, Marcus defers it, and it is never resolved.",
+      "quotes": [
+        "Five minutes on hourly-refreshed data is a slightly odd sentence"
+      ]
+    }
+  ],
+  "notes": "T3 is the C4 fixture. AMENDED 2026-09-02 by Vaibhav's label review: it now carries TWO labelled conflicts (T3-Q01, T3-Q02) plus one unanswered question, not three conflicts. T3-Q03, the tablet exchange, was REMOVED as a conflict and the scope decision inside it was added as the constraint T3-R07. Vaibhav's reading: Wei says 'I'm okay with you deciding it', Marcus says 'Let's call it cut for now', and the release scope is therefore settled - what Wei registers is a dissent and two follow-up conditions, not an unresolved disagreement. This is a clean correction rather than tuning, because nothing in the system extracts open questions yet (E3-S4 is unbuilt) and so no result existed to tune toward. TWO CONSEQUENCES, both open and neither to be inherited silently. (1) C4's threshold was 'at least 2 of 3'. For a 2-item set that is either 2 of 2, which is a strictly harder test than the one that was agreed, or it is a number nobody has chosen. It must be re-decided. (2) E3-S6, 'does it catch the polite disagreement?', was written around T3-Q03 and no longer has a subject. T3-Q01 and T3-Q02 are both explicit disagreements, so the fixture no longer contains a case that punishes a system for keying on tone - which was the entire reason the third one was written. Replacing that coverage needs a NEW fixture, not a relabelled one. T3-Q01 also contradicts T1-R09 across documents; cross-document reasoning is out of scope for C4 and this is noted only so a stranger does not mistake it for a labelling error."
+}

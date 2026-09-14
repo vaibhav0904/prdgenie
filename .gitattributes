@@ -1,0 +1,26 @@
+# In gitattributes the LAST matching pattern wins, so the catch-all goes FIRST and the
+# exceptions go after it. Written the other way round this file silently pinned run.cmd
+# to LF and a fresh clone reproduced BUG-010 on the first command (BUG-013).
+#
+# Default: LF. Fixture and label text is byte-compared against stored raw_text, so a
+# line-ending rewrite would invalidate every citation offset (BUG-006).
+* text=auto eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.mjs text eol=lf
+
+# Exception, and the reason this file exists. Batch files are read by cmd.exe using byte
+# offsets: with LF-only endings it seeks into the middle of a token and fails with errors
+# like "'tlocal' is not recognized". Pinned so a clone on any platform, or any
+# core.autocrlf setting, cannot break the launcher.
+#
+# Verify after any edit here — the attribute, not the file on disk, is what a clone gets:
+#   git check-attr text eol -- run.cmd     ->  text: auto   eol: crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary: never touched, never diffed as text.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.db binary

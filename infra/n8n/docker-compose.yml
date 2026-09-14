@@ -1,0 +1,89 @@
+# A general-purpose n8n. It does not belong to PRD Genie.
+#
+# PRD Genie is a **guest** here, and so is anything else you point at it. That is the whole
+# reason this file sits in `infra/` rather than at the project root: a compose file at the
+# root of a repo is owned by that repo — Docker names the project after the directory, the
+# network becomes `<project>_default`, and `docker compose down -v` run while tidying up the
+# application takes the workflows of every other project with it.
+#
+# That is not hypothetical. Before 2026-09-02 this project was a guest in an n8n owned by a
+# different project's compose file, and when that stack was destroyed our runtime went with
+# it (ADR 0010, amendments 2 and 3). Owning the instance instead of borrowing it fixes
+# nothing on its own — an instance owned by *us* is just the same trap pointing the other
+# way. What fixes it is the instance belonging to no project at all.
+#
+# First time on a machine:
+#   docker volume create n8n_local_data
+#   docker compose -f infra/n8n/docker-compose.yml up -d
+#
+# After that:
+#   docker compose -f infra/n8n/docker-compose.yml stop        stop, keep everything
+#   docker start n8n-local  /  docker stop n8n-local           from anywhere
+#
+# The volume is created by hand and declared `external` on purpose. A compose-managed volume
+# is stamped with the project that first created it and is removed by that project's
+# `down -v`; an external one is owned by the machine and outlives every compose file that
+# ever mounts it — including this one.
+#
+# `name:` below pins the compose project to `n8n-local` regardless of which directory the
+# file is invoked from, so this container is never namespaced under an application.
+#
+# ── What PRD Genie may and may not do to this instance ──────────────────────────────
+#
+#   MAY:  create workflows tagged `prdgenie`, and import or update those (ADR 0010).
+#         Restart the container — but note that a restart interrupts every project using
+#         this n8n, so it is done only after a workflow import, when it is required for
+#         webhook registration.
+#   MAY NOT:  `docker compose down -v`, `docker volume rm n8n_local_data`, or anything else
+#         that destroys state. No PRD Genie script does. "Reset to clean data" in a UAT
+#         means the *application* database (`data/prdgenie.db`), never this volume —
+#         workflow definitions are code, restored from `n8n/workflows/*.json`, and are not
+#         test data to be wiped.
+#
+# Credentials are NOT provisioned here. OpenAI and Gemini keys are typed into the n8n UI and
+# live only in n8n's encrypted store, never in `.env` and never in a repo (ADR 0004). That is
+# why a destroyed volume costs a manual re-entry, and why it is the right trade.
+
+name: n8n-local
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n-local
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # SQLite in the named volume below. No external database, nothing shared with an
+      # application, nothing to provision.
+      - DB_TYPE=sqlite
+      - N8N_PORT=5678
+      - N8N_HOST=localhost
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Asia/Kolkata
+      - TZ=Asia/Kolkata
+      # Local-only, no TLS. Stated here rather than discovered.
+      - N8N_SECURE_COOKIE=false
+      - N8N_DIAGNOSTICS_ENABLED=false
+      # Source documents are meeting transcripts. Nothing goes to hosted telemetry
+      # (docs/traceability.md).
+      - N8N_VERSION_NOTIFICATIONS_ENABLED=false
+      - N8N_RUNNERS_ENABLED=true
+    volumes:
+      # Explicitly named and externally owned, so it is `n8n_local_data` and not
+      # `<project>_n8n_data`. It survives this file moving, being renamed, this compose
+      # project being torn down, or the repo being deleted.
+      - n8n_local_data:/home/node/.n8n
+    extra_hosts:
+      # Applications run on the host, not in Docker (ADR 0002). Docker Desktop provides
+      # this automatically; declaring it documents the dependency rather than relying on a
+      # default.
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  n8n_local_data:
+    name: n8n_local_data
+    # Owned by the machine, not by this compose project. `docker compose down -v` cannot
+    # remove an external volume, which is the point: no application teardown, ours or
+    # anyone else's, can take the workflows with it.
+    external: true

@@ -1,0 +1,57 @@
+{
+  "fixture_id": "E1",
+  "rule": "Labels written BEFORE any tuning. Never edit labels to match output.",
+  "written": "2026-09-01",
+  "expected_requirements": [
+    {
+      "label_id": "E1-R01",
+      "kind": "functional",
+      "statement": "An admin can invite users in bulk by uploading a CSV of email addresses.",
+      "stakeholder": "Priya (Eng Lead)",
+      "quotes": [
+        "an admin can invite users in bulk by uploading a CSV of email addresses"
+      ]
+    },
+    {
+      "label_id": "E1-R02",
+      "kind": "nonfunctional",
+      "statement": "An inactive session logs itself out after exactly thirty minutes; configurability is deferred past the pilot.",
+      "stakeholder": "Tom (Sales)",
+      "quotes": [
+        "> Fine: Every enterprise buyer wants to know that an inactive session logs itself out after thirty minutes.",
+        "We'll do exactly thirty, configurable later, not in the pilot.",
+        "> > Second, security. Every enterprise buyer wants to know that an inactive session logs itself out after thirty minutes."
+      ]
+    },
+    {
+      "label_id": "E1-R03",
+      "kind": "functional",
+      "statement": "Deactivating a user does not delete the dashboards that user built; ownership transfers to the account admin.",
+      "stakeholder": "Priya (Eng Lead)",
+      "quotes": [
+        "deactivating a user must not delete the dashboards they built; ownership transfers to the account admin"
+      ]
+    },
+    {
+      "label_id": "E1-R04",
+      "kind": "constraint",
+      "statement": "The pilot supports Chrome and Edge only; Safari and Firefox are not tested before November.",
+      "stakeholder": "Priya (Eng Lead)",
+      "quotes": [
+        "the pilot supports Chrome and Edge only",
+        "We are not testing Safari or Firefox before November."
+      ]
+    },
+    {
+      "label_id": "E1-R05",
+      "kind": "functional",
+      "statement": "An admin can export the list of users and their assigned roles as a CSV.",
+      "stakeholder": "Marcus (Head of Product)",
+      "quotes": [
+        "an admin must be able to export the list of users and their assigned roles as a CSV"
+      ]
+    }
+  ],
+  "expected_open_questions": [],
+  "notes": "SPAN DISAMBIGUATION FIXTURE. The sentence 'Every enterprise buyer wants to know that an inactive session logs itself out after thirty minutes.' occurs TWICE in raw_text, character-identical: once in Priya's reply and once in Tom's original message quoted beneath it with '> > ' prefixes. E1-R02 therefore cites both, each quote carrying just enough of its line prefix ('> Fine: ' / '> > Second, security. ') to resolve to exactly one region. A stranger resolving quotes by substring search must expect the bare sentence to match two regions and must treat a citation of EITHER as correct (ADR 0008: a requirement stated in two places, cited at the second, is not a miss). An extractor that emits this requirement twice - once per occurrence - is one match and one false positive, since over-splitting is scored as a defect. NO OPEN QUESTIONS ARE LABELED. Every question raised in the thread is answered inside it: Tom's leaver question is answered by Priya and ratified by Marcus, and Priya's request for a decision is granted in the top message. A 'conflict' or 'unanswered' item reported against this fixture is a false positive. A missing_nfr claim against E1 is a judgment call and is deliberately not scored here either way. The quoted reply chain repeats content verbatim by design; an extractor that treats the '>' block as new material will over-count, which is the second thing this fixture measures."
+}

@@ -1,0 +1,131 @@
+{
+  "id": "prdgenieWF4error",
+  "name": "PRDGenie WF4 - Error handler",
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "prdgenie"
+    }
+  ],
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## WF4 - the needs-attention queue\n\nEvery other workflow names this one as its **error workflow**, so a node that throws\nanywhere in WF0, WF1 or WF2 arrives here instead of vanishing into an execution list\nnobody opens.\n\n**A dead letter is what a park is not.** A park is a run that stopped honestly and left\nits work behind, addressable by version id (BUG-017). A dead letter is a run that DIED:\nthere is no version to attach anything to, and the only thing left is the question *what\nneeds a human right now*.\n\nSo the row has to be actionable **on its own**. It carries the trace_id where one exists,\nthe workflow and node that failed, the message, and the execution id - because a dead\nletter with a stack trace and no trace_id is a log line, and one with a trace_id and no\ndetail is a notification.\n\n**It must be ACTIVE, and that cost a drill to learn.** n8n 2.x only builds its workflow\ndependency index from PUBLISHED workflows, so an inactive error workflow is never invoked -\nsilently. WF2 failed correctly, the routing was correct, and nothing happened. The drill in\nreview-ui/scripts/drill-service-unreachable.mjs is what turns that back into a red result if\nit ever regresses.",
+        "height": 480,
+        "width": 460
+      },
+      "id": "sticky-wf4",
+      "name": "About WF4",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        40
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "error-trigger",
+      "name": "Something failed",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        340,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Turn n8n's error object into a dead letter someone can act on.\n//\n// The reason code comes from the CLOSED SET in docs/contracts.md. Two of them exist for\n// exactly this path:\n//\n//   service_unreachable  the review service is not answering. In a two-process local setup\n//                        this is the likeliest failure there is (assumptions.md), and it is\n//                        the one E7-S3's drill forces.\n//   workflow_error       anything else n8n threw. Deliberately vague, and it earns that by\n//                        carrying the workflow, the node and the message beside it.\n//\n// Everything else in the set names something a COMPONENT decided. A workflow that threw\n// decided nothing, so borrowing one of those codes would put a run that died into the same\n// bucket as a run that stopped on purpose.\n\nconst e = $json.execution ?? {};\nconst w = $json.workflow ?? {};\nconst err = e.error ?? {};\nconst message = String(err.message ?? err.description ?? 'no message');\nconst cause = String(err.cause?.code ?? err.code ?? '');\n\n// WHERE THE IDS COME FROM, and this took three drill runs to get right.\n//\n// The obvious place is the failing node's input, and n8n 2.x does not provide it: the error\n// trigger receives {execution:{id,url,error,lastNodeExecuted,mode}, workflow:{id,name}} and\n// **no `execution.data`**, so there is no runData to walk. A dead letter built from the\n// item that failed is a dead letter with nothing in it.\n//\n// What IS there is the request that failed, inside the error. Every service call on this\n// spine names the document either in its path (`/api/documents/DOC-…`) or in its JSON body,\n// so the identity of the run is recoverable from the attempt itself.\n// n8n's error shape is its own and undocumented, and it moved between the version this was\n// written against and the one that runs it. So this SEARCHES the serialised error rather\n// than walking a path into it: two expressions, extracting two ids and nothing else. Header\n// values are already redacted by n8n before the error reaches here.\n//\n// Where they come from: every service call on this spine names the document either in its\n// path (`/api/documents/DOC-…`) or in its JSON body, so the identity of the run survives in\n// the attempt that failed even when nothing else does.\nconst blob = JSON.stringify(err);\nconst find = (re) => (blob.match(re) || [])[1] ?? null;\n\nconst doc_id = find(/\"doc_id\"\\s*:\\s*\"([^\"]+)\"/)\n  ?? find(/\\/api\\/documents\\/([^/?#\"\\\\]+)/);\nconst trace_id = find(/\"trace_id\"\\s*:\\s*\"([^\"]+)\"/);\n\n// A connection that never reached the far end, versus a service that answered badly. Only\n// the first is service_unreachable — the second is a component's own refusal, and it has a\n// reason code of its own already.\n//\n// n8n rewrites transport errors into friendly prose (\"The service refused the connection -\n// perhaps it is offline\"), so matching on the errno alone missed the very failure this code\n// was written for. Both wordings, and the errno where n8n keeps it.\nconst UNREACHABLE = /ECONNREFUSED|ECONNRESET|ENOTFOUND|EHOSTUNREACH|EAI_AGAIN|ETIMEDOUT|socket hang up|fetch failed|refused the connection|could not be reached|is offline/i;\n\n// The provider call is exempt from ever reaching here (it is continueRegularOutput, and\n// \"Parse or park\" classifies it), so a connection failure that DOES reach WF4 came from a\n// call to the review service. That is what lets this be decided on the message alone.\nconst unreachable = UNREACHABLE.test(`${message} ${cause}`);\n\nreturn [{\n  json: {\n    reason: unreachable ? 'service_unreachable' : 'workflow_error',\n    component: 'error_handler',\n    // Either may be null and the row is still stored. The service fills in a missing\n    // trace_id from the document when it can, because that is its own data to look up.\n    trace_id,\n    doc_id,\n    workflow: w.name ?? w.id ?? null,\n    node: e.lastNodeExecuted ?? null,\n    message: message.slice(0, 500),\n    execution_id: e.id ?? (String(e.url ?? '').match(/executions\\/(\\d+)/) || [])[1] ?? null,\n    execution_url: e.url ?? null,\n  },\n}];"
+      },
+      "id": "build-dead-letter",
+      "name": "Build the dead letter",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        620,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:3000/internal/dead-letter",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "record-dead-letter",
+      "name": "Record it",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "prdgenieInternalKey",
+          "name": "PRDGenie Internal Service Key"
+        }
+      },
+      "position": [
+        900,
+        220
+      ],
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 3000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "content": "### The retry here is the point\n\nThe commonest reason WF4 runs at all is that the review service went away - which is also\nthe reason WF4's own write would fail. Five tries, three seconds apart, so the queue entry\nsurvives a restart of the very thing it is reporting on.\n\nIf every try fails the run still ends: an error handler that throws has nowhere to go.",
+        "height": 260,
+        "width": 380
+      },
+      "id": "sticky-retry",
+      "name": "About the retry",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        860,
+        440
+      ]
+    }
+  ],
+  "connections": {
+    "Something failed": {
+      "main": [
+        [
+          {
+            "node": "Build the dead letter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build the dead letter": {
+      "main": [
+        [
+          {
+            "node": "Record it",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

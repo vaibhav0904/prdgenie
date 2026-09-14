@@ -1,0 +1,284 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Metrics — PRD Genie</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root {
+    --bg: #fbfaf8; --panel: #fff; --ink: #1c1b19; --muted: #6b6862; --line: #e5e1da;
+    --accent: #1f6f4a; --accent-soft: #eaf4ee; --warn: #8a5a12; --warn-soft: #fdf4e3;
+    --bad: #8f2d2d; --bad-soft: #fbecec;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+  header { display: flex; gap: 14px; align-items: baseline; padding: 16px 22px;
+           border-bottom: 1px solid var(--line); background: var(--panel); }
+  h1 { font-size: 18px; margin: 0; }
+  .sub { color: var(--muted); font-size: 13px; }
+  header a { color: var(--muted); font-size: 13px; }
+  header a:first-of-type { margin-left: auto; }
+  header a + a { margin-left: 14px; }
+  main { padding: 22px; max-width: 980px; }
+  h2 { font-size: 15px; margin: 26px 0 10px; }
+  .note { color: var(--muted); font-size: 13px; margin: 0 0 18px; max-width: 74ch; }
+
+  .caveat { border-radius: 8px; padding: 12px 14px; margin-bottom: 20px; font-size: 14px;
+            background: var(--warn-soft); color: var(--warn); border: 1px solid #eedcb4; }
+  .caveat.recorded { background: var(--accent-soft); color: var(--accent); border-color: #cfe5d8; }
+  .caveat b { display: block; font-size: 12px; letter-spacing: .06em; text-transform: uppercase;
+              margin-bottom: 4px; }
+
+  .metric { background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+            padding: 14px 16px; margin-bottom: 14px; }
+  .mhead { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .mid { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px;
+         color: var(--muted); }
+  .mname { font-weight: 600; }
+  .mval { margin-left: auto; font-size: 22px; font-variant-numeric: tabular-nums;
+          font-weight: 600; }
+  .munit { font-size: 13px; color: var(--muted); font-weight: 400; margin-left: 4px; }
+  .mdef { color: var(--muted); font-size: 13px; margin: 8px 0 0; max-width: 78ch; }
+  details { margin-top: 10px; }
+  summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+  .rows { display: grid; grid-template-columns: max-content auto; gap: 3px 16px;
+          margin-top: 10px; font-size: 13.5px; }
+  .rows span:nth-child(even) { font-variant-numeric: tabular-nums; }
+  pre { background: #f6f5f2; border: 1px solid var(--line); border-radius: 6px;
+        padding: 9px 11px; overflow-x: auto; font-size: 12.5px; margin: 10px 0 0;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  .guard { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
+  .guard .lbl { font-size: 12px; letter-spacing: .05em; text-transform: uppercase;
+                color: var(--warn); font-weight: 600; }
+  .guard .why { color: var(--muted); font-size: 13px; margin: 4px 0 8px; max-width: 78ch; }
+  .partner { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13.5px;
+             font-variant-numeric: tabular-nums; }
+  .partner b { font-weight: 600; }
+  .fx { background: var(--bg); border: 1px solid var(--line); border-radius: 999px;
+        padding: 1px 10px; }
+  .fx.low { background: var(--bad-soft); border-color: #eccccc; color: var(--bad); }
+  .missing { color: var(--bad); font-size: 13.5px; }
+
+  /* Two populations, given equal weight on purpose: one is not a footnote to the other. */
+  .pops { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+          gap: 10px; margin-top: 12px; }
+  .pop { border: 1px solid var(--line); border-radius: 6px; padding: 9px 11px;
+         background: var(--bg); }
+  .pop-pipe { border-color: #cfdcd3; background: #f4f8f5; }
+  .pv { font-size: 19px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .pl { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .pn { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums;
+        margin-top: 3px; }
+  .popsub { font-size: 12px; letter-spacing: .04em; text-transform: uppercase;
+            color: var(--muted); margin-top: 14px; font-weight: 600; }
+  .split { background: var(--panel); border: 1px solid var(--line); border-left: 3px solid #4a7a5f;
+           border-radius: 8px; padding: 12px 16px; margin-bottom: 14px; }
+  .split .lbl { font-size: 12px; letter-spacing: .05em; text-transform: uppercase;
+                color: var(--muted); font-weight: 600; }
+  .split .why { color: var(--fg); font-size: 13.5px; margin: 6px 0 0; max-width: 84ch; }
+  .prov{margin-top:10px;background:var(--warn-soft);border:1px solid #eedcb4;border-radius:6px;
+         padding:9px 11px;font-size:13px;color:var(--warn);}
+  .prov .tag{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+             font-weight:700;margin-right:6px;}
+  .prov .clears{display:block;margin-top:5px;color:var(--muted);}
+  .mval.prov-val{color:var(--warn);}
+
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; background: var(--panel); }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  td.n { font-variant-numeric: tabular-nums; }
+  tr.quick td { background: var(--warn-soft); }
+  .wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+  .unc { display: grid; grid-template-columns: max-content auto; gap: 4px 16px; }
+  .unc .v { font-variant-numeric: tabular-nums; font-weight: 600; }
+  .unc .w { color: var(--muted); font-size: 13px; grid-column: 1 / -1; margin: 0 0 8px; }
+  .err { color: var(--bad); }
+</style>
+<header>
+  <h1>Metrics</h1>
+  <span class="sub" id="sub">loading…</span>
+  <a href="/">inbox</a>
+  <a href="/attention.html">needs attention</a>
+  <a href="/judge.html">judge sweeps</a>
+  <a href="/api/metrics">json</a>
+</header>
+
+<main>
+  <p class="note">
+    Every figure here is produced by a query you can run yourself:
+    <code>.\run.cmd review-ui\scripts\query.mjs metrics</code>, or one metric at a time.
+    The page and the command read the <b>same module</b> — there is no second copy of any
+    query, because a definition with two implementations is how a median quietly becomes a
+    mean. Open <b>the rows behind it</b> on any metric to recompute it by hand.
+  </p>
+
+  <div id="caveat"></div>
+  <div id="metrics"></div>
+
+  <h2>The uncomfortable ones</h2>
+  <p class="note">
+    Rendered rather than dropped. A metrics page that only carries the flattering numbers is
+    a slide, not an instrument.
+  </p>
+  <div class="unc" id="uncomfortable"></div>
+
+  <h2>Review sessions</h2>
+  <p class="note">
+    The drill-down behind M2 and M3, shortest first, because <b>a session that was forty
+    seconds of "approve" is the thing worth finding</b> — it is what a rubber-stamped PRD
+    looks like in the data. Rows under a minute are highlighted.
+  </p>
+  <div class="wrap"><table id="sessions">
+    <thead><tr><th>Session</th><th>Version</th><th>Seconds</th><th>Actions</th>
+      <th>Approved</th><th>Overrides</th><th>Edits</th><th>Opened</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+</main>
+
+<script>
+const el = (t, c, txt) => { const n = document.createElement(t); if (c) n.className = c;
+  if (txt !== undefined) n.textContent = txt; return n; };
+
+function renderGuard(m) {
+  const g = m.guardrail;
+  const box = el('div', 'guard');
+  box.append(el('div', 'lbl', 'Never read ' + m.id + ' alone'));
+  box.append(el('p', 'why', g.why));
+
+  // A metric whose partner is missing does not render its own value either. "Inseparable"
+  // that depends on a page remembering to draw two things is a convention; this is a rule.
+  if (!g.renderable || !g.partner_value) {
+    box.append(el('div', 'missing',
+      'Its partner is unavailable, so ' + m.id + ' is withheld. Grade a run and reload.'));
+    return { box, withhold: true };
+  }
+  const p = g.partner_value;
+  const row = el('div', 'partner');
+  if (p.kind === 'C1_recall') {
+    row.append(el('b', '', 'C1 ' + p.verdict + ', graded ' + p.graded_on + ':'));
+    const worst = el('span', 'fx' + (p.worst.recall < 90 ? ' low' : ''),
+      'weakest fixture ' + p.worst.fixture + ' — recall ' + p.worst.recall
+      + '%, precision ' + p.worst.precision + '%');
+    row.append(worst);
+  } else {
+    row.append(el('b', '', p.kind + ' is shown above.'));
+  }
+  box.append(row);
+  return { box, withhold: false };
+}
+
+function renderMetric(m) {
+  const card = el('div', 'metric');
+  const head = el('div', 'mhead');
+  head.append(el('span', 'mid', m.id), el('span', 'mname', m.name));
+  const val = el('span', 'mval');
+  head.append(val);
+  card.append(head);
+  card.append(el('p', 'mdef', m.definition));
+
+  let withhold = false;
+  if (m.guardrail) {
+    const g = renderGuard(m);
+    withhold = g.withhold;
+    card.append(g.box);
+  }
+  // SHOWN AT THE PRECISION IT IS PUBLISHED AT (BUG-055). `0.0009` and `0.002` are both four
+  // decimals as far as the metric is concerned; JavaScript drops the trailing zero and the
+  // reader is left guessing how much of the number is real. The metric declares its own
+  // resolution, so print that many digits and the figure states its own accuracy.
+  const shown = m.value === null ? 'no data'
+    : (Number.isInteger(m.decimals) ? m.value.toFixed(m.decimals) : String(m.value));
+  val.textContent = withhold ? '—' : shown;
+  if (!withhold && m.value !== null) val.append(el('span', 'munit', m.unit));
+
+  // A figure whose population is not what the definition describes is marked where the number
+  // is, not in a footnote. The mark is computed and removes itself.
+  if (m.provisional) {
+    val.classList.add('prov-val');
+    const p = el('div', 'prov');
+    p.append(el('span', 'tag', 'provisional'));
+    p.append(document.createTextNode(m.provisional.why));
+    p.append(el('span', 'clears', 'Clears when: ' + m.provisional.clears_when));
+    card.append(p);
+  }
+
+  // TWO POPULATIONS, SIDE BY SIDE (BUG-065).
+  //
+  // The headline above is the published definition and it has not moved. Beside it sits the same
+  // metric over the runs the pipeline actually produced, because four fifths of the approved
+  // versions in this database were minted by a verifier and every figure that divided by them
+  // was mostly describing the test suite. Both denominators are printed. Neither figure is a
+  // correction of the other, and the reader is told which one they are reading before the digit.
+  if (m.populations) {
+    const box = el('div', 'pops');
+    for (const p of m.populations) {
+      const cell = el('div', 'pop' + (p.scope === 'pipeline' ? ' pop-pipe' : ''));
+      const v = p.value === null ? 'no data'
+        : (Number.isInteger(m.decimals) ? p.value.toFixed(m.decimals) : String(p.value));
+      cell.append(el('div', 'pv', v));
+      cell.append(el('div', 'pl', p.label));
+      cell.append(el('div', 'pn', 'n = ' + (p.n === null ? '?' : p.n)));
+      box.append(cell);
+    }
+    card.append(box);
+  }
+
+  const det = el('details');
+  det.append(el('summary', '', 'the rows behind it, and the SQL'));
+  for (const p of (m.populations ?? [{ scope: '', label: '', rows: m.rows, sql: m.sql }])) {
+    if (p.label) det.append(el('div', 'popsub', p.label));
+    const rows = el('div', 'rows');
+    for (const r of p.rows) { rows.append(el('span', '', r.label), el('span', '', String(r.value))); }
+    det.append(rows);
+    const pre = el('pre'); pre.textContent = p.sql; det.append(pre);
+  }
+  card.append(det);
+  return card;
+}
+
+/** The split itself, stated once at the top rather than inferred from five pairs. */
+function renderSplit(s) {
+  const box = el('div', 'split');
+  box.append(el('span', 'lbl', 'the two populations'));
+  const line = el('p', 'why');
+  line.textContent = s.minted_by_verifiers + ' of ' + s.approved_versions
+    + ' approved PRDVersions (' + s.pct_scaffolding + '%) were minted by a verifier and signed '
+    + 'off a second later; ' + s.produced_by_pipeline + ' were produced by the pipeline. '
+    + 'Membership is derived — ' + s.predicate + ' — never from what a product is named. ' + s.why;
+  box.append(line);
+  return box;
+}
+
+fetch('/api/metrics').then((r) => r.json()).then((d) => {
+  document.getElementById('sub').textContent =
+    d.metrics.length + ' metrics · baseline: ' + d.caveat.status;
+
+  const cav = el('div', 'caveat' + (d.caveat.illustrative ? '' : ' recorded'));
+  cav.append(el('b', '', 'Baseline status: ' + d.caveat.status + ' — computed, not typed'));
+  cav.append(document.createTextNode(d.caveat.text));
+  document.getElementById('caveat').append(cav);
+
+  const host = document.getElementById('metrics');
+  if (d.population_split) host.append(renderSplit(d.population_split));
+  for (const m of d.metrics) host.append(renderMetric(m));
+
+  const unc = document.getElementById('uncomfortable');
+  for (const u of d.uncomfortable) {
+    unc.append(el('span', '', u.label), el('span', 'v', String(u.value)), el('p', 'w', u.why));
+  }
+
+  const tb = document.querySelector('#sessions tbody');
+  const rows = [...d.sessions].sort((a, b) => (a.seconds ?? 0) - (b.seconds ?? 0));
+  for (const s of rows) {
+    const tr = el('tr', (s.seconds !== null && s.seconds < 60) ? 'quick' : '');
+    for (const [v, n] of [[s.session_id], [s.prd_version_id, 1], [s.seconds, 1], [s.actions, 1],
+      [s.approvals, 1], [s.overrides, 1], [s.edits, 1], [s.opened_at]]) {
+      tr.append(el('td', n ? 'n' : '', v === null || v === undefined ? '—' : String(v)));
+    }
+    tb.append(tr);
+  }
+}).catch((e) => {
+  document.getElementById('sub').textContent = '';
+  document.getElementById('caveat').append(el('p', 'err', 'Could not load metrics: ' + e.message));
+});
+</script>

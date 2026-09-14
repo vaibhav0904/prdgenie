@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Review · PRD Genie</title>
+<style>
+  :root {
+    --paper: #F6F7F8; --sheet: #FFFFFF; --ink: #16191F; --soft: #5C6773;
+    --rule: #DDE2E7; --rule-2: #B9C2CC;
+    --go: #1F6A4D; --go-soft: #E4F1EB;
+    --no: #9A3B2A; --no-soft: #F8E7E2;
+    --amber: #8A6212; --amber-soft: #FBEFD3;
+    --blue: #26518C; --blue-soft: #E5ECF7;
+    --mark: #FDE9A8;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: "Cascadia Mono", ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #12151A; --sheet: #191D24; --ink: #E6EAEF; --soft: #9AA6B2;
+      --rule: #2A3038; --rule-2: #3B444F;
+      --go: #6DBF9B; --go-soft: #16281F;
+      --no: #E09383; --no-soft: #2C1B17;
+      --amber: #D9AE55; --amber-soft: #2C2314;
+      --blue: #8FB3E8; --blue-soft: #182338;
+      --mark: #514518;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans);
+         font-size: 15px; line-height: 1.55; }
+  a { color: var(--blue); }
+
+  header.bar { position: sticky; top: 0; z-index: 5; background: var(--sheet);
+               border-bottom: 1px solid var(--rule); padding: 0.7rem 1rem;
+               display: flex; flex-wrap: wrap; gap: 0.6rem 1.2rem; align-items: center; }
+  header.bar h1 { font-size: 1rem; margin: 0; font-weight: 650; }
+  .pill { font-family: var(--mono); font-size: 0.76rem; border: 1px solid var(--rule);
+          border-radius: 999px; padding: 0.15rem 0.6rem; color: var(--soft); }
+  .pill b { color: var(--ink); }
+  .pill.warn { background: var(--amber-soft); border-color: var(--amber); color: var(--amber); }
+  .pill.ok { background: var(--go-soft); border-color: var(--go); color: var(--go); }
+
+  .wrap { display: grid; gap: 1rem; padding: 1rem; align-items: start; }
+  @media (min-width: 1080px) { .wrap { grid-template-columns: 1.35fr 1fr; } }
+
+  .card { background: var(--sheet); border: 1px solid var(--rule); border-radius: 4px;
+          padding: 0.9rem 1rem; margin-bottom: 0.8rem; }
+  .card h2 { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.1em;
+             color: var(--soft); margin: 0 0 0.6rem; }
+
+  .caveats { background: var(--amber-soft); border: 1px solid var(--amber); border-radius: 4px;
+             padding: 0.7rem 0.9rem; margin-bottom: 0.8rem; }
+  .caveats p { margin: 0.2rem 0; color: var(--amber); font-size: 0.9rem; }
+  .caveats strong { display: block; margin-bottom: 0.3rem; }
+
+  .item { border-top: 1px solid var(--rule); padding: 0.75rem 0; }
+  .item:first-of-type { border-top: 0; }
+  .item .head { display: flex; gap: 0.5rem; align-items: baseline; flex-wrap: wrap; }
+  .item code.id { font-family: var(--mono); font-size: 0.74rem; color: var(--soft); }
+  .tag { font-size: 0.66rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+         padding: 0.1rem 0.4rem; border-radius: 2px; background: var(--blue-soft); color: var(--blue); }
+  .tag.ungrounded { background: var(--amber-soft); color: var(--amber); }
+  .tag.first-party { background: var(--no-soft); color: var(--no); }
+  .tag.decided-approve { background: var(--go-soft); color: var(--go); }
+  .tag.decided-reject { background: var(--no-soft); color: var(--no); }
+  .tag.decided-edit, .tag.decided-approve_ungrounded { background: var(--amber-soft); color: var(--amber); }
+  .statement { margin: 0.3rem 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.35rem 0; }
+  .chip { font-family: var(--mono); font-size: 0.72rem; border: 1px solid var(--rule-2);
+          background: var(--paper); border-radius: 3px; padding: 0.1rem 0.45rem; cursor: pointer;
+          color: var(--soft); max-width: 34ch; overflow: hidden; text-overflow: ellipsis;
+          white-space: nowrap; }
+  .chip:hover { border-color: var(--blue); color: var(--blue); }
+  .chip.unresolvable { border-style: dashed; color: var(--amber); border-color: var(--amber); cursor: not-allowed; }
+  .actions { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.4rem; }
+  button { font: inherit; font-size: 0.82rem; padding: 0.25rem 0.6rem; border-radius: 3px;
+           border: 1px solid var(--rule-2); background: var(--sheet); color: var(--ink); cursor: pointer; }
+  button:hover { border-color: var(--ink); }
+  button.go { border-color: var(--go); color: var(--go); }
+  button.no { border-color: var(--no); color: var(--no); }
+  button.override { border-color: var(--amber); color: var(--amber); }
+  button.primary { background: var(--ink); color: var(--paper); border-color: var(--ink); font-weight: 600; }
+  button[disabled] { opacity: 0.45; cursor: not-allowed; }
+
+  .source { position: sticky; top: 3.4rem; max-height: calc(100vh - 4.6rem); overflow: auto; }
+  .source pre { white-space: pre-wrap; word-break: break-word; font-family: var(--mono);
+                font-size: 0.8rem; line-height: 1.65; margin: 0; }
+  mark.span { background: var(--mark); color: inherit; }
+  .docname { font-family: var(--mono); font-size: 0.76rem; color: var(--soft); margin-bottom: 0.5rem;
+             display: flex; gap: 0.5rem; align-items: center; }
+
+  .figs { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.5rem; }
+  .fig { border: 1px solid var(--rule); border-radius: 3px; padding: 0.5rem 0.6rem; }
+  .fig .n { font-size: 1.2rem; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .fig .l { font-size: 0.72rem; color: var(--soft); }
+  .muted { color: var(--soft); font-size: 0.85rem; }
+  .feature { border-left: 3px solid var(--rule-2); padding-left: 0.6rem; margin: 0.5rem 0; }
+  .score { font-family: var(--mono); font-size: 0.78rem; color: var(--blue); }
+</style>
+</head>
+<body>
+<header class="bar">
+  <h1>PRD Genie · review</h1>
+  <span class="pill" id="p-version">—</span>
+  <span class="pill" id="p-state">—</span>
+  <span class="pill" id="p-ready">—</span>
+  <span class="pill" id="p-overrides">—</span>
+  <span style="flex:1"></span>
+  <button class="primary" id="signoff" disabled>Sign off</button>
+</header>
+
+<div class="wrap">
+  <div>
+    <div id="caveats"></div>
+
+    <div class="card">
+      <h2>This version, counted from the rows</h2>
+      <div class="figs" id="figs"></div>
+      <p class="muted" id="trend"></p>
+    </div>
+
+    <div class="card">
+      <h2>Requirements</h2>
+      <div id="requirements"></div>
+    </div>
+
+    <div class="card">
+      <h2>Epics, features and priority</h2>
+      <p class="muted">Every score is <code>round(reach × impact × confidence ÷ effort, 1)</code>,
+        computed by code. <strong>Effort is a model estimate</strong> — a guess made from a
+        paragraph, with no knowledge of the codebase.</p>
+      <div id="structure"></div>
+    </div>
+
+    <div class="card">
+      <h2>Stories</h2>
+      <div id="stories"></div>
+    </div>
+
+    <div class="card">
+      <h2>What the room did not settle</h2>
+      <div id="questions"></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card source">
+      <div class="docname"><span id="docname">no document selected</span><span id="docauthor"></span></div>
+      <pre id="sourcetext">Click a citation to see the sentence it came from.</pre>
+    </div>
+  </div>
+</div>
+
+<script>
+const qs = new URLSearchParams(location.search);
+const versionId = qs.get('version');
+let data = null;
+const docCache = new Map();
+
+const el = (id) => document.getElementById(id);
+const text = (s) => document.createTextNode(s == null ? '' : String(s));
+
+/** Everything the source pane renders goes through here. Zero innerHTML, ever (E4-S2). */
+function renderSource(doc, span) {
+  el('docname').textContent = doc.title + '  (' + doc.doc_type + ')';
+  el('docauthor').textContent = doc.authorship === 'first_party'
+    ? '· written by the PM — not corroboration' : '· third party';
+  const pre = el('sourcetext');
+  pre.textContent = '';
+  if (!span || span.start_char == null || span.match_kind === 'not_found') {
+    pre.appendChild(text(doc.raw_text));
+    return;
+  }
+  pre.appendChild(text(doc.raw_text.slice(0, span.start_char)));
+  const m = document.createElement('mark');
+  m.className = 'span';
+  m.appendChild(text(doc.raw_text.slice(span.start_char, span.end_char)));
+  pre.appendChild(m);
+  pre.appendChild(text(doc.raw_text.slice(span.end_char)));
+  m.scrollIntoView({ block: 'center', behavior: 'smooth' });
+}
+
+async function showCitation(docId, citation) {
+  if (!docCache.has(docId)) {
+    const r = await fetch('/api/documents/' + encodeURIComponent(docId));
+    docCache.set(docId, await r.json());
+  }
+  renderSource(docCache.get(docId), citation);
+}
+
+function chips(docId, citations) {
+  const box = document.createElement('div');
+  box.className = 'chips';
+  for (const c of citations || []) {
+    const b = document.createElement('button');
+    b.className = 'chip' + (c.match_kind === 'not_found' ? ' unresolvable' : '');
+    b.textContent = c.match_kind === 'not_found'
+      ? 'unplaceable: ' + (c.quote || '').slice(0, 40)
+      : '“' + (c.quote || '').slice(0, 40) + '”';
+    if (c.match_kind === 'not_found') b.title = 'This quote could not be located in the source.';
+    else b.addEventListener('click', () => showCitation(docId, c));
+    box.appendChild(b);
+  }
+  return box;
+}
+
+async function decide(itemType, itemId, decision) {
+  let reason = null;
+  let afterText = null;
+  if (decision === 'edit') {
+    const item = data.requirements.find((r) => r.req_id === itemId);
+    afterText = prompt('Rewrite the requirement:', item ? item.statement : '');
+    if (afterText === null) return;
+  }
+  if (decision !== 'approve') {
+    reason = prompt(decision === 'approve_ungrounded'
+      ? 'This item could not be verified against the source. Why are you approving it anyway?'
+      : 'Reason (required):');
+    if (!reason) return;
+  }
+  const res = await fetch('/api/prd-versions/' + versionId + '/decisions', {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ item_type: itemType, item_id: itemId, decision, reason, after_text: afterText }),
+  });
+  const body = await res.json();
+  if (!res.ok) { alert(body.detail || body.reason); return; }
+  await load();
+}
+
+function decisionTag(key) {
+  const d = data.decisions[key];
+  if (!d) return null;
+  const t = document.createElement('span');
+  t.className = 'tag decided-' + d.decision;
+  t.textContent = d.decision.replace('_', ' ');
+  if (d.reason) t.title = d.reason;
+  return t;
+}
+
+function actionRow(itemType, itemId, grounded) {
+  const box = document.createElement('div');
+  box.className = 'actions';
+  const mk = (label, cls, decision) => {
+    const b = document.createElement('button');
+    b.className = cls; b.textContent = label;
+    b.addEventListener('click', () => decide(itemType, itemId, decision));
+    return b;
+  };
+  if (grounded === false) box.appendChild(mk('Approve anyway', 'override', 'approve_ungrounded'));
+  else box.appendChild(mk('Approve', 'go', 'approve'));
+  box.appendChild(mk('Reject', 'no', 'reject'));
+  if (itemType === 'requirement') box.appendChild(mk('Edit', '', 'edit'));
+  return box;
+}
+
+function renderRequirements() {
+  const box = el('requirements');
+  box.textContent = '';
+  for (const r of data.requirements) {
+    const d = document.createElement('div');
+    d.className = 'item';
+    const head = document.createElement('div');
+    head.className = 'head';
+    const id = document.createElement('code'); id.className = 'id'; id.textContent = r.req_id;
+    head.appendChild(id);
+    const kind = document.createElement('span'); kind.className = 'tag'; kind.textContent = r.kind;
+    head.appendChild(kind);
+    if (!r.grounded) {
+      const u = document.createElement('span'); u.className = 'tag ungrounded';
+      u.textContent = 'not verified against the source';
+      head.appendChild(u);
+    }
+    if (r.pm_authored) {
+      const p = document.createElement('span'); p.className = 'tag first-party';
+      p.textContent = "the PM's own words";
+      p.title = 'From a first-party document or edited here. Excluded from the grounding rate.';
+      head.appendChild(p);
+    }
+    const tag = decisionTag('requirement:' + r.req_id);
+    if (tag) head.appendChild(tag);
+    d.appendChild(head);
+
+    const p = document.createElement('p'); p.className = 'statement'; p.textContent = r.statement;
+    d.appendChild(p);
+    // The subject the extractor named, beside the statement it wrote. When a statement has no
+    // subject in it and this does, that is BUG-016's open question answering itself.
+    if (r.subject) {
+      const sub = document.createElement('p'); sub.className = 'muted';
+      sub.textContent = 'subject: ' + r.subject;
+      d.appendChild(sub);
+    }
+    d.appendChild(chips(r.doc_id, r.citations));
+    d.appendChild(actionRow('requirement', r.req_id, r.grounded));
+    box.appendChild(d);
+  }
+}
+
+function renderStructure() {
+  const box = el('structure');
+  box.textContent = '';
+  for (const e of data.epics) {
+    const d = document.createElement('div');
+    d.className = 'item';
+    const h = document.createElement('div'); h.className = 'head';
+    const id = document.createElement('code'); id.className = 'id'; id.textContent = e.epic_id;
+    h.appendChild(id);
+    const t = document.createElement('strong'); t.textContent = e.title; h.appendChild(t);
+    d.appendChild(h);
+    if (e.summary) { const s = document.createElement('p'); s.className = 'muted'; s.textContent = e.summary; d.appendChild(s); }
+    for (const f of data.features.filter((x) => x.epic_id === e.epic_id)) {
+      const fd = document.createElement('div'); fd.className = 'feature';
+      const fh = document.createElement('div'); fh.className = 'head';
+      const ft = document.createElement('span'); ft.textContent = f.title; fh.appendChild(ft);
+      if (f.priority_score != null) {
+        const sc = document.createElement('span'); sc.className = 'score';
+        sc.textContent = 'RICE ' + f.priority_score
+          + '  (r=' + f.reach + ' i=' + f.impact + ' c=' + f.confidence + ' e=' + f.effort + ' est.)';
+        fh.appendChild(sc);
+      }
+      fd.appendChild(fh);
+      if (f.rationale) { const r = document.createElement('p'); r.className = 'muted'; r.textContent = f.rationale; fd.appendChild(r); }
+      const reqs = document.createElement('p'); reqs.className = 'muted';
+      reqs.textContent = f.req_ids.length + ' requirement' + (f.req_ids.length === 1 ? '' : 's');
+      fd.appendChild(reqs);
+      d.appendChild(fd);
+    }
+    box.appendChild(d);
+  }
+  if (!data.epics.length) {
+    const p = document.createElement('p'); p.className = 'muted';
+    p.textContent = 'No epics on this version — the PRD is a flat list.';
+    box.appendChild(p);
+  }
+}
+
+function renderStories() {
+  const box = el('stories');
+  box.textContent = '';
+  for (const s of data.stories) {
+    const d = document.createElement('div'); d.className = 'item';
+    const h = document.createElement('div'); h.className = 'head';
+    const id = document.createElement('code'); id.className = 'id'; id.textContent = s.story_id;
+    h.appendChild(id);
+    const tag = decisionTag('story:' + s.story_id);
+    if (tag) h.appendChild(tag);
+    d.appendChild(h);
+    const p = document.createElement('p'); p.className = 'statement';
+    p.textContent = 'As a ' + s.as_a + ', I want ' + s.i_want + ', so that ' + s.so_that;
+    d.appendChild(p);
+    const ul = document.createElement('ul');
+    for (const c of s.acceptance_criteria) {
+      const li = document.createElement('li');
+      li.appendChild(text(c.criterion + '  '));
+      const code = document.createElement('code'); code.className = 'id'; code.textContent = c.req_id;
+      li.appendChild(code);
+      ul.appendChild(li);
+    }
+    d.appendChild(ul);
+    d.appendChild(actionRow('story', s.story_id));
+    box.appendChild(d);
+  }
+}
+
+function renderQuestions() {
+  const box = el('questions');
+  box.textContent = '';
+  const doc = data.documents[0];
+  for (const q of data.open_questions) {
+    const d = document.createElement('div'); d.className = 'item';
+    const h = document.createElement('div'); h.className = 'head';
+    const k = document.createElement('span'); k.className = 'tag'; k.textContent = q.kind; h.appendChild(k);
+    d.appendChild(h);
+    const p = document.createElement('p'); p.className = 'statement'; p.textContent = q.question;
+    d.appendChild(p);
+    if (doc) d.appendChild(chips(doc.doc_id, q.citations));
+    box.appendChild(d);
+  }
+  for (const u of data.unsettled_positions || []) {
+    const d = document.createElement('div'); d.className = 'item';
+    const h = document.createElement('div'); h.className = 'head';
+    const k = document.createElement('span'); k.className = 'tag'; k.textContent = 'unsettled position';
+    h.appendChild(k);
+    const who = document.createElement('code'); who.className = 'id'; who.textContent = u.stakeholder || '';
+    h.appendChild(who);
+    d.appendChild(h);
+    const p = document.createElement('p'); p.className = 'statement'; p.textContent = u.position;
+    d.appendChild(p);
+    if (doc) d.appendChild(chips(doc.doc_id, u.citations));
+    box.appendChild(d);
+  }
+  if (!data.open_questions.length && !(data.unsettled_positions || []).length) {
+    const p = document.createElement('p'); p.className = 'muted';
+    p.textContent = 'Nothing recorded as unsettled on this version.';
+    box.appendChild(p);
+  }
+}
+
+function renderFigures() {
+  const f = data.figures;
+  const box = el('figs');
+  box.textContent = '';
+  const fig = (n, l) => {
+    const d = document.createElement('div'); d.className = 'fig';
+    const a = document.createElement('div'); a.className = 'n'; a.textContent = n;
+    const b = document.createElement('div'); b.className = 'l'; b.textContent = l;
+    d.appendChild(a); d.appendChild(b); box.appendChild(d);
+  };
+  // A rate never appears without its denominator (docs/reporting.md).
+  fig(f.grounded + ' of ' + f.grounded_of, 'grounded');
+  fig(f.requirements, 'requirements');
+  fig(f.epics + ' / ' + f.features, 'epics / features');
+  fig(f.stories, 'stories');
+  fig(f.open_questions, 'open questions');
+  fig(f.approved, 'approved');
+  fig(f.approved_ungrounded, 'approved unverified');
+  fig(f.rejected + ' / ' + f.edited, 'rejected / edited');
+
+  // E6-S3: a real comparison where one exists, and still nothing where none does. The
+  // predecessor is the version this one was DERIVED FROM, not the previous number — and
+  // saying which it was is what lets a reader check the comparison instead of trusting it.
+  const t = el('trend');
+  t.textContent = '';
+  if (data.trend.available) {
+    t.append(document.createTextNode(
+      'Against version #' + data.trend.prior_version_id + ': requirements '
+      + data.trend.requirements.join(' → ') + ', grounded ' + data.trend.grounded.join(' → ') + '. '));
+    const a = document.createElement('a');
+    a.href = '/history.html?prd_id=' + encodeURIComponent(data.version.prd_id ?? '');
+    a.textContent = 'full history';
+    t.append(a);
+  } else {
+    t.textContent = 'Trend: ' + data.trend.reason + '. Nothing is shown rather than showing zero.';
+  }
+
+  const c = el('caveats');
+  c.textContent = '';
+  if (data.caveats.length) {
+    const d = document.createElement('div'); d.className = 'caveats';
+    const s = document.createElement('strong'); s.textContent = 'What this version cannot claim';
+    d.appendChild(s);
+    for (const line of data.caveats) { const p = document.createElement('p'); p.textContent = line; d.appendChild(p); }
+    c.appendChild(d);
+  }
+}
+
+function renderBar() {
+  const r = data.readiness;
+  el('p-version').textContent = 'v' + data.version.prd_version_id;
+  el('p-state').textContent = data.version.state;
+  const ready = el('p-ready');
+  ready.textContent = r.decided + ' of ' + r.total + ' decided';
+  ready.className = 'pill ' + (r.ready ? 'ok' : 'warn');
+  const ov = el('p-overrides');
+  ov.textContent = data.figures.approved_ungrounded + ' unverified approved';
+  ov.className = 'pill ' + (data.figures.approved_ungrounded ? 'warn' : '');
+  const b = el('signoff');
+  b.disabled = !r.ready || data.version.state !== 'in_review';
+  b.title = b.disabled
+    ? 'Disabled as a courtesy. The endpoint refuses regardless, and the database trigger refuses after that.'
+    : 'Sign off this version';
+}
+
+async function load() {
+  const res = await fetch('/api/prd-versions/' + versionId + '/review');
+  data = await res.json();
+  renderBar(); renderFigures(); renderRequirements(); renderStructure(); renderStories(); renderQuestions();
+}
+
+el('signoff').addEventListener('click', async () => {
+  const res = await fetch('/api/prd-versions/' + versionId + '/sign-off', { method: 'POST' });
+  const body = await res.json();
+  alert(res.ok ? 'Signed off. State: ' + body.state : (body.detail || body.reason));
+  await load();
+});
+
+if (!versionId) {
+  document.body.textContent = 'Add ?version=<id> to the URL.';
+} else {
+  load();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "fixture_id": "G1",
+  "rule": "Labels written BEFORE any tuning. Never edit labels to match output.",
+  "written": "2026-09-01",
+  "expected_requirements": [],
+  "expected_open_questions": [],
+  "notes": "THE CORRECT OUTPUT FOR THIS FIXTURE IS NOTHING. Zero Requirements, zero OpenQuestions. G1 is an all-hands housekeeping note about car parking, the holiday calendar and the coffee machine. It concerns the ForgeSight team but not the ForgeSight product, and a Requirement is defined in docs/domain.md as an atomic, testable PRODUCT need. Any extracted requirement is a false positive; one extracted requirement is a failure of this fixture, not a rounding error. G1 exists because a system that always finds requirements is broken, and nothing else in the dataset can catch that. THE FIXTURE IS BAITED ON PURPOSE. It is full of requirement-shaped facilities language - 'Permits must be displayed on the dashboard of the vehicle', 'It must be descaled weekly', 'Carry-over is capped at five days and must be used by 31 March' - and the parking bullet uses the word 'dashboard', the single most product-loaded noun in this domain, about a car. Every one of these is a facilities rule, not a product need. It also contains every internal stakeholder by name (Marcus, Wei, Tom, Priya, Dana), so name-spotting alone must not be enough to make a passage look like a requirements passage. Two items are genuinely unresolved in the document - what the biscuit budget is, and whether the electric charge points move - and neither is an OpenQuestion in this system's sense, because an OpenQuestion is a flagged ambiguity about a Requirement addressed to the PM. Reporting either is a false positive."
+}

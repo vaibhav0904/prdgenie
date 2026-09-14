@@ -1,0 +1,166 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Needs attention — PRD Genie</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  :root {
+    --bg: #fbfaf8; --panel: #fff; --ink: #1c1b19; --muted: #6b6862; --line: #e5e1da;
+    --accent: #1f6f4a; --accent-soft: #eaf4ee; --warn: #8a5a12; --warn-soft: #fdf4e3;
+    --bad: #8f2d2d; --bad-soft: #fbecec;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+  header { display: flex; gap: 14px; align-items: baseline; padding: 16px 22px;
+           border-bottom: 1px solid var(--line); background: var(--panel); }
+  h1 { font-size: 18px; margin: 0; }
+  .sub { color: var(--muted); font-size: 13px; }
+  header a { color: var(--muted); font-size: 13px; margin-left: auto; }
+  header a + a { margin-left: 14px; }
+  main { padding: 22px; max-width: 980px; }
+  h2 { font-size: 15px; margin: 0 0 10px; }
+  .note { color: var(--muted); font-size: 13px; margin: 0 0 18px; max-width: 70ch; }
+  .entry { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--bad);
+           border-radius: 8px; padding: 12px 14px; margin-bottom: 12px; }
+  .entry.resolved { border-left-color: var(--accent); opacity: .72; }
+  .top { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .reason { font-weight: 600; }
+  .when { color: var(--muted); font-size: 13px; margin-left: auto; }
+  .meta { color: var(--muted); font-size: 13px; margin-top: 6px;
+          display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; }
+  .meta b { font-weight: 500; color: var(--ink); }
+  .msg { margin-top: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+         font-size: 12.5px; white-space: pre-wrap; word-break: break-word;
+         background: var(--bad-soft); border-radius: 6px; padding: 8px 10px; }
+  .entry.resolved .msg { background: #f4f3f0; }
+  .unjoinable { background: var(--warn-soft); color: var(--warn); border-radius: 999px;
+                padding: 1px 9px; font-size: 12px; }
+  form { margin-top: 10px; display: flex; gap: 8px; }
+  input[type=text] { flex: 1; font: inherit; padding: 6px 9px; border-radius: 6px;
+                     border: 1px solid var(--line); background: var(--panel); }
+  button { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line);
+           background: var(--panel); cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .resolution { margin-top: 8px; font-size: 13px; color: var(--accent); }
+  .empty { color: var(--muted); font-size: 14px; }
+  .bar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; }
+  .err { color: var(--bad); font-size: 13px; }
+</style>
+<header>
+  <h1>Needs attention</h1>
+  <span class="sub" id="count">loading…</span>
+  <a href="/">inbox</a>
+  <a href="/review.html">review</a>
+  <a href="/history.html">history</a>
+  <a href="/metrics.html">metrics</a>
+</header>
+
+<main>
+  <p class="note">
+    Every unrecoverable failure in WF0, WF1 or WF2 lands here with the workflow, the node and
+    the message, so a run that died is a queue entry rather than a document that never
+    arrived. Resolving one <b>adds</b> a note to the record; nothing above it is rewritten.
+  </p>
+  <div class="bar">
+    <button id="refresh">Refresh</button>
+    <label><input type="checkbox" id="showall"> show resolved</label>
+    <span class="err" id="err"></span>
+  </div>
+  <div id="list"></div>
+</main>
+
+<script>
+// No framework, no build step (ADR 0009).
+//
+// EVERYTHING here is attacker-influenced: a dead letter's message is whatever n8n caught,
+// which can contain a fragment of a source document. textContent everywhere, never
+// innerHTML — the same security control as the review screen, for the same reason.
+const $ = (id) => document.getElementById(id);
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+};
+
+function field(grid, label, value) {
+  if (value === null || value === undefined || value === '') return;
+  grid.append(el('b', null, label), el('span', null, String(value)));
+}
+
+function entry(d) {
+  const box = el('div', d.resolved_at ? 'entry resolved' : 'entry');
+
+  const top = el('div', 'top');
+  top.append(el('span', 'reason', d.reason));
+  top.append(el('span', 'sub', d.component ?? 'unknown component'));
+  // Said out loud. A row that cannot be joined back to a run is still worth keeping — losing
+  // the failure to protect a column would be the wrong trade — but a reader must not have to
+  // notice two absent fields to work that out.
+  if (!d.joinable) top.append(el('span', 'unjoinable', 'no trace_id — cannot be joined to a run'));
+  top.append(el('span', 'when', d.created_at));
+  box.append(top);
+
+  const grid = el('div', 'meta');
+  field(grid, 'trace', d.trace_id);
+  field(grid, 'document', d.doc_id);
+  field(grid, 'workflow', d.envelope && d.envelope.workflow);
+  field(grid, 'node', d.envelope && d.envelope.node);
+  field(grid, 'execution', d.envelope && d.envelope.execution_id);
+  box.append(grid);
+
+  const msg = d.envelope && d.envelope.message;
+  if (msg) box.append(el('div', 'msg', msg));
+
+  if (d.resolved_at) {
+    box.append(el('div', 'resolution', `resolved ${d.resolved_at} — ${d.resolution_note ?? ''}`));
+  } else {
+    const form = el('form');
+    const note = el('input');
+    note.type = 'text';
+    note.required = true;
+    note.placeholder = 'What was done about it? (required)';
+    const go = el('button', 'primary', 'Mark resolved');
+    go.type = 'submit';
+    form.append(note, go);
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      $('err').textContent = '';
+      const res = await fetch(`/api/dead-letters/${d.dead_letter_id}/resolve`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ note: note.value }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        // The endpoint refuses, not the button. The field is `required` as a courtesy; the
+        // reason it cannot be skipped is that the server says no (E4-S3's rule).
+        $('err').textContent = `refused: ${body.reason ?? res.status}`;
+        return;
+      }
+      load();
+    };
+    box.append(form);
+  }
+  return box;
+}
+
+async function load() {
+  const all = $('showall').checked ? '?all=1' : '';
+  const data = await (await fetch(`/api/dead-letters${all}`)).json();
+  $('count').textContent = `${data.unresolved} unresolved of ${data.total}`;
+  const list = $('list');
+  list.replaceChildren();
+  if (!data.dead_letters.length) {
+    list.append(el('p', 'empty', $('showall').checked
+      ? 'Nothing has ever failed unrecoverably.'
+      : 'Nothing needs attention. (Tick "show resolved" for the history.)'));
+    return;
+  }
+  for (const d of data.dead_letters) list.append(entry(d));
+}
+
+$('refresh').onclick = load;
+$('showall').onchange = load;
+load();
+</script>

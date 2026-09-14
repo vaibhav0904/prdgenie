@@ -1,0 +1,22 @@
+{
+  "name": "prd-genie",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Turns meeting transcripts and product documents into reviewed, source-grounded PRDs. Every requirement carries a verbatim citation; the approval gate is a database trigger.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env review-ui/server.js",
+    "db:init": "node --env-file-if-exists=.env review-ui/scripts/init-db.mjs",
+    "db:query": "node --env-file-if-exists=.env review-ui/scripts/query.mjs",
+    "check:schema": "node --env-file-if-exists=.env review-ui/scripts/query.mjs schema-check",
+    "verify:gate": "node --env-file-if-exists=.env review-ui/scripts/verify-gate.mjs",
+    "verify:doors": "node --env-file-if-exists=.env review-ui/scripts/verify-doors.mjs",
+    "produce": "node --env-file-if-exists=.env evals/harness/produce.mjs",
+    "eval": "node --env-file-if-exists=.env evals/harness/grade.mjs"
+  },
+  "_scripts_note": "These are a convenience, not the documented interface. Windows' default PowerShell execution policy blocks npm's .ps1 shim, so every command in the docs is the `node ...` form these wrap (BUG-002).",
+  "_dependencies_note": "There is no dependencies block, on purpose (ADR 0009). Storage is node:sqlite, HTTP is node:http, config is --env-file. Adding a dependency means amending that ADR: `npm install` failing on a stranger's machine is the risk being bought back."
+}

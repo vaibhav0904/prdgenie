@@ -1,0 +1,199 @@
+{
+  "fixture_id": "H2",
+  "rule": "Labels written BEFORE any tuning. Never edit labels to match output.",
+  "written": "2026-09-01",
+  "expected_requirements": [
+    {
+      "label_id": "H2-R01",
+      "kind": "functional",
+      "statement": "A user can filter any dashboard to a single depot, and every chart on that dashboard follows the filter.",
+      "stakeholder": "Dana (Customer Success), relaying Northwind operations",
+      "quotes": [
+        "a user must be able to filter any dashboard to a single depot and have every chart on that dashboard follow the filter",
+        "it has to be every chart, not chart by chart"
+      ]
+    },
+    {
+      "label_id": "H2-R02",
+      "kind": "constraint",
+      "statement": "ForgeSight is reachable only from the customer's allow-listed IP ranges; all other traffic is refused at the edge.",
+      "stakeholder": "Dana (Customer Success), relaying Meridian IT security",
+      "quotes": [
+        "ForgeSight must be reachable only from the customer's allow-listed IP ranges, with everything else refused at the edge"
+      ]
+    },
+    {
+      "label_id": "H2-R03",
+      "kind": "functional",
+      "statement": "An admin can set the account's default time zone, and every timestamp in ForgeSight displays in that time zone.",
+      "stakeholder": "Dana (Customer Success), relaying Halcyon programme team",
+      "quotes": [
+        "an admin must be able to set the account's default time zone, and every timestamp in ForgeSight must display in that time zone"
+      ]
+    },
+    {
+      "label_id": "H2-R04",
+      "kind": "functional",
+      "statement": "The display currency is configurable per account.",
+      "stakeholder": "Dana (Customer Success), relaying Halcyon programme team",
+      "quotes": [
+        "the display currency has to be configurable per account"
+      ]
+    }
+  ],
+  "expected_open_questions": [
+    {
+      "label_id": "H2-Q01",
+      "kind": "unanswered",
+      "question": "None of the four asks has been accepted into pilot scope. Dana explicitly puts the decision to Marcus and Priya and it is unanswered within the document.",
+      "quotes": [
+        "Tell me which of the four you want in the pilot and I will write them up properly."
+      ]
+    }
+  ],
+  "expected_redactions": [
+    {
+      "kind": "email",
+      "value": "dana.osei@neuronforge.com"
+    },
+    {
+      "kind": "email",
+      "value": "marcus.bell@neuronforge.com"
+    },
+    {
+      "kind": "email",
+      "value": "priya.raghavan@neuronforge.com"
+    },
+    {
+      "kind": "email",
+      "value": "rachel.okonkwo@northwindlogistics.com"
+    },
+    {
+      "kind": "email",
+      "value": "d.vetrov@meridianbank.example"
+    },
+    {
+      "kind": "email",
+      "value": "dan.vetrov88@fastmail.example"
+    },
+    {
+      "kind": "email",
+      "value": "sofia.marchetti@halcyonretail.eu"
+    },
+    {
+      "kind": "email",
+      "value": "l.bianchi@halcyonretail.eu"
+    },
+    {
+      "kind": "phone",
+      "value": "+44 20 7946 0812"
+    },
+    {
+      "kind": "phone",
+      "value": "+44 161 496 0033"
+    },
+    {
+      "kind": "phone",
+      "value": "07700 900412"
+    },
+    {
+      "kind": "phone",
+      "value": "+39 335 774 2210"
+    },
+    {
+      "kind": "phone",
+      "value": "+39 02 8088 1140"
+    }
+  ],
+  "notes": "H2 is the C2 redaction fixture. AMENDED 2026-09-02 by Vaibhav's decision: NAMES ARE KEPT, only contact details are removed. Thirteen values must not survive into storage - eight email addresses and five phone numbers. EVERY OCCURRENCE COUNTS, not the first. The eight forms of four external contact names that this file previously required to be redacted are now in expected_retentions and MUST SURVIVE. That is a specification change, not a relabelled failure: external-name redaction was built and worked (BUG-009), and was withdrawn because a requirement is only reviewable if you can tell who asked for it - a speaker whose role is never stated is identified by nothing but their name, so redacting it orphans the requirement rather than anonymising it. WHAT MUST SURVIVE, and why it is written down at all: expected_retentions carries external names, internal stakeholder names (Dana, Marcus, Priya, Tom), customer organisations (Northwind Logistics, Meridian Bank, Halcyon Retail Group and their short forms) and job titles. Before this amendment the file listed only what must GO, so a redactor that removed every capitalised word would have scored 21 of 21 and passed the 100% floor cleanly - over-redaction was structurally invisible to this dataset. C2 now fails on a retention that goes missing, which makes 'PII redaction quietly starts eating the document' a red case instead of a silent change of policy. CUSTOMER ORGANISATION NAMES stay, unchanged from the original reading: 'Northwind needs SSO' is the requirement and redacting the company would gut the corpus. LABELS ARE WRITTEN AGAINST THE PRE-REDACTION TEXT, because that is what this fixture is: the document as it arrives at the door. All five requirement and open-question quotes were chosen to contain no redactable value, so each survives redaction byte-identical and still resolves by substring search against the stored raw_text. Redaction shifts character offsets; it does not disturb these spans.",
+  "expected_retentions": [
+    {
+      "kind": "external_name",
+      "value": "Rachel Okonkwo"
+    },
+    {
+      "kind": "external_name",
+      "value": "Rachel"
+    },
+    {
+      "kind": "external_name",
+      "value": "Daniel Vetrov"
+    },
+    {
+      "kind": "external_name",
+      "value": "Daniel"
+    },
+    {
+      "kind": "external_name",
+      "value": "Sofia Marchetti"
+    },
+    {
+      "kind": "external_name",
+      "value": "Sofia"
+    },
+    {
+      "kind": "external_name",
+      "value": "Luca Bianchi"
+    },
+    {
+      "kind": "external_name",
+      "value": "Luca"
+    },
+    {
+      "kind": "internal_name",
+      "value": "Dana"
+    },
+    {
+      "kind": "internal_name",
+      "value": "Marcus"
+    },
+    {
+      "kind": "internal_name",
+      "value": "Priya"
+    },
+    {
+      "kind": "internal_name",
+      "value": "Tom"
+    },
+    {
+      "kind": "organisation",
+      "value": "Northwind Logistics"
+    },
+    {
+      "kind": "organisation",
+      "value": "Meridian Bank"
+    },
+    {
+      "kind": "organisation",
+      "value": "Halcyon Retail Group"
+    },
+    {
+      "kind": "organisation",
+      "value": "Northwind"
+    },
+    {
+      "kind": "organisation",
+      "value": "Meridian"
+    },
+    {
+      "kind": "organisation",
+      "value": "Halcyon"
+    },
+    {
+      "kind": "role",
+      "value": "Head of Operations"
+    },
+    {
+      "kind": "role",
+      "value": "IT Security"
+    },
+    {
+      "kind": "role",
+      "value": "Programme Lead"
+    },
+    {
+      "kind": "role",
+      "value": "Customer Success"
+    }
+  ]
+}

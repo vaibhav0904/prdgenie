@@ -1,0 +1,14 @@
+{
+  "produced_at": "2026-09-02T07:11:32.411Z",
+  "product_id": "forgesight",
+  "fixtures_available": 9,
+  "fixtures_attempted": 1,
+  "ingest_only": true,
+  "runs": {
+    "H2": {
+      "doc_id": "DOC-2026-0093",
+      "trace_id": "2a3d19f0-39c7-4a95-be00-a0783df0bb41"
+    }
+  },
+  "failures": []
+}

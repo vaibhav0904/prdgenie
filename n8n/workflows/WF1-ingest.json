@@ -1,0 +1,521 @@
+{
+  "id": "prdgenieWF1ingest",
+  "name": "PRDGenie WF1 - Ingest",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## WF1 — The doors\n\nTwo entry channels, one canonical document.\n\nEach door does nothing but **map its input to a common shape**. If anything downstream ever needed to know which door a document came through, we would have a branch, not an adapter.\n\nAdding a fifth `doc_type` is a change here and nowhere else.",
+        "height": 300,
+        "width": 380,
+        "color": 4
+      },
+      "id": "note-doors",
+      "name": "About the doors",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "formTitle": "PRD Genie — add a source document",
+        "formDescription": "Paste a meeting transcript, notes, an email thread, or a feature brief. Contact details are redacted before anything is stored.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Product",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Document type",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "transcript"
+                  },
+                  {
+                    "option": "notes"
+                  },
+                  {
+                    "option": "email"
+                  },
+                  {
+                    "option": "feature_brief"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Who wrote this?",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Someone else — a meeting, an email, a customer"
+                  },
+                  {
+                    "option": "I wrote it myself"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Text",
+              "fieldType": "textarea",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Update an existing PRD (optional)",
+              "fieldType": "text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "door-form",
+      "name": "Door: Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        60,
+        80
+      ],
+      "webhookId": "prdgenie-ingest-form"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ingest",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "door-webhook",
+      "name": "Door: Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        60,
+        300
+      ],
+      "webhookId": "prdgenie-ingest-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Thin adapter. Mapping only — no logic, no branching on the channel beyond\n// recording which one it was for the operator.\nconst out = [];\nfor (const item of $input.all()) {\n  const f = item.json;\n  out.push({\n    json: {\n      product_id: String(f['Product'] ?? '').trim().toLowerCase().replace(/\\s+/g, '-'),\n      doc_type: f['Document type'],\n      raw_text: f['Text'],\n      target_prd_id: f['Update an existing PRD (optional)'] || null,\n      source_channel: 'form',\n    // E4-S6. Collected AT THE DOOR and nowhere else. The wording is deliberately about the\n    // person rather than the taxonomy: \"first_party\" means nothing to someone pasting a\n    // document, and a field nobody understands gets answered at random.\n    //\n    // Anything other than the explicit \"I wrote it myself\" is third_party. Defaulting the\n    // other way would silently weaken every claim this system makes.\n      authorship: f['Who wrote this?'] === 'I wrote it myself' ? 'first_party' : 'third_party',\n    },\n  });\n}\nreturn out;"
+      },
+      "id": "map-form",
+      "name": "Map form input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Thin adapter. Same output shape as the form door.\nconst out = [];\nfor (const item of $input.all()) {\n  const b = item.json.body ?? item.json;\n  out.push({\n    json: {\n      product_id: b.product_id,\n      doc_type: b.doc_type,\n      raw_text: b.raw_text,\n      title: b.title ?? null,\n      received_at: b.received_at ?? null,\n      target_prd_id: b.target_prd_id ?? null,\n      source_channel: 'webhook',\n\n    // Whether WF1 should run the pipeline it just chose, or stop at the envelope. Default\n    // YES: a caller that says nothing wants the work done. `false` exists so the doors can\n    // be exercised without paying a model — a check that costs money is a check nobody runs\n    // unattended, and a door nobody tests is the door that was shut for two days (BUG-043).\n    //\n    // It does NOT change the routing decision or suppress the `routed` event. What is\n    // recorded about where the document was going is the same either way.\n      dispatch: b.dispatch !== false,\n    // Optional on the webhook, defaulting to third_party (E4-S6). A caller that says nothing\n    // is not claiming to have written the document.\n      authorship: b.authorship === 'first_party' ? 'first_party' : 'third_party',\n    },\n  });\n}\nreturn out;"
+      },
+      "id": "map-webhook",
+      "name": "Map webhook input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Normalize, redact, store\n\nThe review service is the **single writer** (ADR 0002) and owns everything deterministic (ADR 0004):\n\n- mints `trace_id` **once**\n- redacts contact details **before** the insert\n- stores the canonical document, immutably\n\nThe eval harness calls this same endpoint, so a case tests the code that actually runs.",
+        "height": 300,
+        "width": 380,
+        "color": 5
+      },
+      "id": "note-spine",
+      "name": "About the service call",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        540,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:3000/internal/ingest",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 15000,
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "call-ingest",
+      "name": "Normalize + store",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "prdgenieInternalKey",
+          "name": "PRDGenie Internal Service Key"
+        }
+      },
+      "position": [
+        620,
+        190
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 1000
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "status-ok",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "ok",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-status",
+      "name": "Envelope ok?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        860,
+        190
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Routing\n\n`has_approved_version` is **computed by the service at call time**, never a stored flag (contracts §4).\n\n- no approved version → **WF2**, generate a PRD\n- approved version exists → **WF3**, compute a delta\n\nBoth branches now **call** (E6-S2). `responseMode: lastNode` means the caller gets the\nenvelope the downstream workflow ended on, so ingesting a document and reading what became\nof it is one request.\n\nA webhook caller may send `dispatch: false` to exercise the door WITHOUT running the\npipeline. The routing decision and its `routed` event are recorded either way — a check that\ncosts a model call is a check nobody runs unattended, and a door that can only be tested by\npaying is a door that stops being tested.",
+        "height": 460,
+        "width": 380,
+        "color": 3
+      },
+      "id": "note-routing",
+      "name": "About routing",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "dispatch",
+              "leftValue": "={{ (() => { try { return $('Map webhook input').first().json.dispatch !== false; } catch { return true; } })() }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "run-pipeline",
+      "name": "Run the pipeline?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1140,
+        40
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "door-only",
+      "name": "Door only — the envelope is the answer",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1380,
+        -120
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "has-approved",
+              "leftValue": "={{ $json.payload.has_approved_version }}",
+              "rightValue": "={{ true }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "route-new-or-delta",
+      "name": "Existing approved PRD?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1380,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:5678/webhook/delta",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ doc_id: $json.doc_id }) }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "to-wf3-call",
+      "name": "Dispatch: WF3 delta",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1620,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:5678/webhook/generate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ doc_id: $json.doc_id }) }}",
+        "options": {
+          "timeout": 300000
+        }
+      },
+      "id": "to-wf2-call",
+      "name": "Dispatch: WF2 generate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1620,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Non-ok never becomes a silent pass. The reason is machine-readable and travels\n// with the trace_id (contracts §1).\nfor (const item of $input.all()) {\n  const p = item.json.payload ?? {};\n  console.warn(`[WF1] ingest refused: ${p.reason} missing=${JSON.stringify(p.missing ?? [])}`);\n}\nreturn $input.all();"
+      },
+      "id": "handle-error",
+      "name": "Refused — log the reason",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1140,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Why there is no Respond node\n\nn8n refuses to start a **form-initiated** workflow that contains a `Respond to Webhook` node anywhere in it — reachable or not (BUG-005). That one node broke the door a human uses.\n\nSo the webhook door answers with `responseMode: lastNode`: the envelope from the last node it reaches. The form door gets n8n's own completion page, which is the right answer for a person.\n\nEvery branch therefore has to **end on the envelope**, or the caller gets whatever the last node happened to emit.",
+        "height": 320,
+        "width": 380,
+        "color": 3
+      },
+      "id": "note-respond",
+      "name": "About responding",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1860,
+        40
+      ]
+    }
+  ],
+  "connections": {
+    "Door: Form": {
+      "main": [
+        [
+          {
+            "node": "Map form input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Door: Webhook": {
+      "main": [
+        [
+          {
+            "node": "Map webhook input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map form input": {
+      "main": [
+        [
+          {
+            "node": "Normalize + store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map webhook input": {
+      "main": [
+        [
+          {
+            "node": "Normalize + store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize + store": {
+      "main": [
+        [
+          {
+            "node": "Envelope ok?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Envelope ok?": {
+      "main": [
+        [
+          {
+            "node": "Run the pipeline?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Refused — log the reason",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Existing approved PRD?": {
+      "main": [
+        [
+          {
+            "node": "Dispatch: WF3 delta",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Dispatch: WF2 generate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refused — log the reason": {
+      "main": [
+        []
+      ]
+    },
+    "Run the pipeline?": {
+      "main": [
+        [
+          {
+            "node": "Existing approved PRD?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Door only — the envelope is the answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Door only — the envelope is the answer": {
+      "main": [
+        []
+      ]
+    },
+    "Dispatch: WF3 delta": {
+      "main": [
+        []
+      ]
+    },
+    "Dispatch: WF2 generate": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "prdgenieWF4error"
+  },
+  "tags": [
+    {
+      "name": "prdgenie"
+    }
+  ]
+}

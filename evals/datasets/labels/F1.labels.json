@@ -1,0 +1,88 @@
+{
+  "fixture_id": "F1",
+  "rule": "Labels written BEFORE any tuning. Never edit labels to match output.",
+  "written": "2026-09-01",
+  "expected_requirements": [
+    {
+      "label_id": "F1-R01",
+      "kind": "functional",
+      "statement": "On sign-in every customer lands on a single Operations Overview view summarising four headline metrics (volume, cost, on-time rate, exceptions) with no configuration required.",
+      "stakeholder": "Marcus (Head of Product)",
+      "quotes": [
+        "Every ForgeSight customer lands, on sign-in, on a single Operations Overview view that summarises their four headline metrics"
+      ]
+    },
+    {
+      "label_id": "F1-R02",
+      "kind": "functional",
+      "statement": "From any summary metric on the Overview a user can drill down to the underlying transaction rows in a single click.",
+      "stakeholder": "Marcus (Head of Product)",
+      "quotes": [
+        "From any summary metric on the Overview, a user can drill down to the underlying transaction rows in a single click.",
+        "The number and the rows behind the number are never more than one gesture apart"
+      ]
+    },
+    {
+      "label_id": "F1-R03",
+      "kind": "functional",
+      "statement": "Any metric can be compared against the same period in the previous year.",
+      "stakeholder": "Marcus (Head of Product)",
+      "quotes": [
+        "Every metric in ForgeSight can be compared against the same period in the previous year"
+      ]
+    },
+    {
+      "label_id": "F1-R04",
+      "kind": "functional",
+      "statement": "Each chart displays, on the chart, the warehouse table it draws its data from.",
+      "stakeholder": "Marcus (Head of Product)",
+      "quotes": [
+        "Each chart states the warehouse table it draws from, in plain sight, on the chart."
+      ]
+    },
+    {
+      "label_id": "F1-R05",
+      "kind": "functional",
+      "statement": "ForgeSight offers an embed code that places a single chart inside a customer's own intranet page.",
+      "stakeholder": "Marcus (Head of Product)",
+      "quotes": [
+        "ForgeSight will offer an embed code that places a single chart inside the customer's own intranet page"
+      ]
+    },
+    {
+      "label_id": "F1-R06",
+      "kind": "nonfunctional",
+      "statement": "A new customer's first live dashboard is standing within five business days of contract signature.",
+      "stakeholder": "Dana (Customer Success)",
+      "quotes": [
+        "a new customer's first live dashboard is standing within five business days of contract signature"
+      ]
+    },
+    {
+      "label_id": "F1-R07",
+      "kind": "constraint",
+      "statement": "For the pilot, ForgeSight ships in English only.",
+      "stakeholder": "Marcus (Head of Product)",
+      "quotes": [
+        "For the pilot, ForgeSight ships in English only."
+      ]
+    }
+  ],
+  "expected_open_questions": [
+    {
+      "label_id": "F1-Q01",
+      "kind": "unanswered",
+      "question": "Halcyon has asked for French. The brief defers rather than decides ('for now'), and no date, condition or owner for revisiting it is given.",
+      "quotes": [
+        "Halcyon has asked about French and the answer, for now, is a warm no."
+      ]
+    },
+    {
+      "label_id": "F1-Q02",
+      "kind": "missing_nfr",
+      "question": "The brief commits publicly to an onboarding time and to an embeddable chart outside ForgeSight's own front door, and says nothing anywhere about authentication, access control or availability for that embed.",
+      "quotes": []
+    }
+  ],
+  "notes": "Marketing register: the requirements are real but wrapped in persuasion, which is the extraction difficulty here. THE TRAP is 'the conversation should end in four seconds, not in a fortnight of email'. That four seconds is rhetoric about how quickly an argument is settled, NOT a performance requirement, and an extractor that emits a four-second nonfunctional requirement from this fixture has hallucinated a number - which under C2's rule is the fatal class, not a low score. Two further sentences are theme, not requirement, and must not be extracted: 'ForgeSight exists to close the gap between the warehouse and the decision' and 'Trust is a feature.' F1-Q02 is a missing_nfr and by definition carries an EMPTY quotes array; strangers matching by span overlap must match missing_nfr items by category, not by span. F1-R01's cited span stops before the em-dashed list of the four metrics so the quote is a clean minimal span; the metric names are in the statement and are not separately cited."
+}

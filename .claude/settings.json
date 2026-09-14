@@ -1,0 +1,29 @@
+{
+  "_comment": [
+    "Read-only inspection is allowlisted so the agent stops asking permission to look.",
+    "'git add' and 'git commit' are deliberately NOT allowlisted — promoting work is one of",
+    "the two human gates. 'git mv' IS allowed: it is the story-promotion primitive.",
+    "'Read(.env)' is denied; .env.example is readable because it holds placeholders only."
+  ],
+  "permissions": {
+    "allow": [
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git branch*)",
+      "Bash(git mv *)",
+      "Bash(ls*)",
+      "Bash(mkdir *)",
+      "Bash(npm run eval*)",
+      "Bash(npm ls*)",
+      "Bash(node evals/harness/grade.mjs*)",
+      "Bash(node review-ui/scripts/query.mjs*)",
+      "Bash(curl -s http://localhost:3000/api/*)",
+      "Bash(curl -s http://localhost:5678/rest/*)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Read(.env)"
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+# Secrets — never committed. .env.example carries the placeholders.
+.env
+
+# Local database — regenerated from fixtures by `.\run.cmd evals/harness/produce.mjs`.
+# The glob must cover SQLite's sidecars too: in WAL mode the recent transactions live in
+# `-wal`, not in `-db`, so an ignore rule that names only `*.db` tracks a multi-megabyte
+# binary copy of the database while appearing to exclude it (BUG-015).
+data/*.db*
+
+node_modules/
+
+# Raw n8n exports before credential stripping. Only n8n/workflows/ ships.
+n8n/exports/raw/
+
+# The method kit is a read-only reference with its own git history.
+agentic-build-kit/
+
+# The run manifest is derived state, rewritten by every produce and pointing at row ids in
+# a database that is itself untracked. Tracking it made the tree permanently dirty, which
+# is how the next thing that should not be committed gets committed (BUG-015).
+# The archived result files carry the doc_id and version of the run they describe.
+# Every dot-prefixed manifest, not just the two that exist today - naming them one by one
+# is how the next one gets committed (BUG-015).
+evals/results/.*.json
+n8n/.deploy-in-progress.json
+
+# Per-machine n8n credential bindings (E9-S1). A credential id is generated per instance,
+# so it must never be committed.
+n8n/workflows.local/
+
+# Database backups taken before a rehearsal or a reset. Local only.
+data/backup/
+
+# Written by every setup run, describing THIS machine at THIS moment: which version was picked,
+# how many items are left for the camera, which hostile-transcript tab to open. Regenerated on
+# every double-click of 2-SET-UP-THE-DEMO.cmd, and meaningless on anyone else's machine.
+deliverables/.demo-state.json
+deliverables/.demo-status.html
+
+# The generated demo video (deliverables/video/): rendered by the sibling project
+# prdgenie-video, 40-120 MB, at the GitHub per-file limit. render.json beside it says how it
+# was made; the file itself is handed over, not committed.
+deliverables/video/
+
+# The one-mutator-at-a-time lock (BUG-054). Held by whichever sweep or deploy is running; never committed.
+.exclusive.lock

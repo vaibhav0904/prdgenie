@@ -1,0 +1,91 @@
+{
+  "id": "C1",
+  "title": "extraction quality",
+  "verdict": "PASS",
+  "produced_at": "2026-09-05T16:10:03.924Z",
+  "prompt_versions": [
+    "7f9c3916173e",
+    "a58bfce566cb",
+    "7393cee3e7aa",
+    "ed52ca31c41b",
+    "f3e129ba50f0",
+    "fe9372faa9ca"
+  ],
+  "models": [
+    "gpt-4.1-mini"
+  ],
+  "headline": [
+    {
+      "fixture": "T1",
+      "metric": "recall",
+      "value": 0.8666666666666667,
+      "floor": 0.8
+    },
+    {
+      "fixture": "T1",
+      "metric": "precision",
+      "value": 0.8666666666666667,
+      "floor": 0.75
+    },
+    {
+      "fixture": "T3",
+      "metric": "recall",
+      "value": 1,
+      "floor": 0.8
+    },
+    {
+      "fixture": "T3",
+      "metric": "precision",
+      "value": 1,
+      "floor": 0.75
+    },
+    {
+      "fixture": "N1",
+      "metric": "recall",
+      "value": 1,
+      "floor": 0.8
+    },
+    {
+      "fixture": "N1",
+      "metric": "precision",
+      "value": 1,
+      "floor": 0.75
+    },
+    {
+      "fixture": "E1",
+      "metric": "recall",
+      "value": 1,
+      "floor": 0.8
+    },
+    {
+      "fixture": "E1",
+      "metric": "precision",
+      "value": 1,
+      "floor": 0.75
+    },
+    {
+      "fixture": "F1",
+      "metric": "recall",
+      "value": 0.8571428571428571,
+      "floor": 0.8
+    },
+    {
+      "fixture": "F1",
+      "metric": "precision",
+      "value": 0.8571428571428571,
+      "floor": 0.75
+    },
+    {
+      "fixture": "T4",
+      "metric": "recall",
+      "value": 1,
+      "floor": 0.8
+    },
+    {
+      "fixture": "T4",
+      "metric": "precision",
+      "value": 0.8571428571428571,
+      "floor": 0.75
+    }
+  ]
+}

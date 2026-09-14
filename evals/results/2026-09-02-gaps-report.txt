@@ -1,0 +1,79 @@
+Open questions in the run produced 2026-09-02T10:54:43.997Z
+
+E1  v187  0 open question(s)
+
+F1  v188  6 open question(s)
+   [missing_nfr] n/a
+      What are the performance requirements or expectations for the ForgeSight dashboard and drill-down interactions?
+   [missing_nfr] n/a
+      What security measures or requirements apply to the ForgeSight dashboard, data access, and embed code?
+   [missing_nfr] n/a
+      What accessibility standards or features must the ForgeSight dashboard comply with or include?
+   [missing_nfr] n/a
+      What are the data retention policies or requirements for the data displayed and stored by ForgeSight?
+   [missing_nfr] n/a
+      What scalability requirements or expectations exist for ForgeSight as customer data volume or user count grows?
+   [missing_nfr] n/a
+      What are the plans or requirements for localization beyond the initial English-only pilot?
+   labelled open questions: 2
+      MISSED   F1-Q01 (unanswered) Halcyon has asked for French. The brief defers rather than decides ('f
+      MISSED   F1-Q02 (missing_nfr) The brief commits publicly to an onboarding time and to an embeddable 
+
+G1  v189  1 open question(s) [parked: no_requirements_found]
+   [unanswered] grounded
+      What is the biscuit budget?
+
+H1  v190  6 open question(s)
+   [missing_nfr] n/a
+      How should security be ensured for shared links and exports beyond the stated constraints on data leaving NeuronForge infrastructure?
+   [missing_nfr] n/a
+      What are the performance expectations or limits for generating exports, especially for those under the 100,000 row threshold?
+   [missing_nfr] n/a
+      Are there any accessibility requirements for the user interface elements related to renaming dashboards, export notifications, or link revocation?
+   [missing_nfr] n/a
+      How should the system handle scaling for a large number of shared links or exports beyond the example of 400,000 rows?
+   [missing_nfr] n/a
+      Are there any localization or internationalization requirements for messages related to renaming, exports, or link revocation?
+   [missing_nfr] n/a
+      What are the data retention policies for exported data and revoked links?
+
+H2  v191  1 open question(s)
+   [unanswered] grounded
+      Which of the four pilot accounts should be included in the pilot?
+   labelled open questions: 1
+      FOUND    H2-Q01 (unanswered) None of the four asks has been accepted into pilot scope. Dana explici
+
+N1  v192  2 open question(s)
+   [unanswered] grounded
+      Does 'last 30 days' mean a rolling 30-day period or the calendar month?
+   [unanswered] grounded
+      Did Marcus want a 'what changed since last week' feature for the data or the dashboard configuration?
+   labelled open questions: 2
+      FOUND    N1-Q01 (unanswered) Does the 'last 30 days' preset mean a rolling 30 days or the calendar 
+      FOUND    N1-Q02 (unanswered) Marcus asked for a 'what changed since last week' capability and the n
+
+T1  v193  1 open question(s)
+   [unanswered] UNGROUNDED (1 not_found)
+      How long should old data be retained in ForgeSight?
+   labelled open questions: 3
+      FOUND    T1-Q01 (unanswered) How long is customer data retained? Raised in the room, no answer give
+      MISSED   T1-Q02 (unanswered) Pre-aggregation was raised as the only route to the two-second budget,
+      MISSED   T1-Q03 (missing_nfr) No availability or uptime target is stated anywhere in this document, 
+
+T2  v194  0 open question(s)
+   labelled open questions: 2
+      MISSED   T2-Q01 (unanswered) The twenty-recipient cap is a rounded guess off one customer's distrib
+      MISSED   T2-Q02 (unanswered) T1 fixed the refresh at hourly; T2 introduces a nightly pre-aggregatio
+
+T3  v195  1 open question(s)
+   [conflict] grounded
+      How should authentication be handled for prospects who want to create a login with an email address, given the conflict between sales wanting self-serve email login and engineering insisting on SAML-only authentication?
+   labelled open questions: 3
+      FOUND    T3-Q01 (conflict) Tom needs a self-serve email login so prospects can trial ForgeSight; 
+      MISSED   T3-Q02 (conflict) Marcus accepts the industry templates as small; Priya says directly th
+      MISSED   T3-Q04 (unanswered) A five-minute alert latency on hourly-refreshed data is internally inc
+
+Total kept: 18  {"conflict":1,"unanswered":5,"missing_nfr":12}
+
+No verdict is printed on purpose. C4 owns the threshold, C4 is not built, and its
+old one is void until E3-S6 writes the T4 fixture.

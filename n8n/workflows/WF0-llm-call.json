@@ -1,0 +1,442 @@
+{
+  "id": "prdgenieWF0llmcall",
+  "name": "PRDGenie WF0 - LLM Call",
+  "_comment_active": "Must be active even though it has no trigger of its own: n8n refuses to run an inactive workflow as a subworkflow ('Workflow is not active and cannot be executed').",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## WF0 — the only door to a model\n\n**This is the only workflow that holds a provider credential.** Every other workflow calls it as a subworkflow. That is what makes cost logging unbypassable: there is no second path to a model to forget to instrument.\n\nInput:  `{ system, user, schema, prompt_name, prompt_version, component, trace_id, doc_id }`\nOutput: an envelope — `ok` with parsed JSON, or `needs_review` with a reason.\n\nIt never returns a partial result and never falls back to another vendor. A park is honest; a silently different model is not.",
+        "height": 340,
+        "width": 420,
+        "color": 7
+      },
+      "id": "note-wf0",
+      "name": "About WF0",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "wf0-trigger",
+      "name": "Called by another workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -20,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build the provider request. Non-reasoning on BOTH sides (ADR 0001): the doer is\n// gpt-4.1-mini with strict structured output, the judge is gemini-2.5-flash with its thinking\n// budget set to zero. Two vendors, one door.\n//\n// The caller picks with `provider`, and everything else about a call is identical: same\n// envelope in, same envelope out, same classifier, same cost row. A caller that names no\n// provider gets the doer, which is every caller written before E7-S5.\n\n// Gemini's responseSchema is an OpenAPI subset: it has no `additionalProperties` and wants\n// its type names upper-cased. Dropping the key does NOT open the schema - Gemini emits only\n// declared properties, and the code that reads the answer takes only the fields it knows\n// (layer 2 is about what a schema OFFERS an obeyed instruction, and this offers nothing new).\nfunction toGeminiSchema(s) {\n  if (!s || typeof s !== 'object') return s;\n  const t = Array.isArray(s.type) ? s.type[0] : s.type;\n  const g = {};\n  if (t) g.type = String(t).toUpperCase();\n  if (s.description) g.description = s.description;\n  if (Array.isArray(s.enum)) g.enum = s.enum;\n  if (t === 'object') {\n    g.properties = {};\n    for (const [k, v] of Object.entries(s.properties ?? {})) g.properties[k] = toGeminiSchema(v);\n    if (Array.isArray(s.required)) g.required = s.required;\n    g.propertyOrdering = Object.keys(s.properties ?? {});\n  }\n  if (t === 'array') g.items = toGeminiSchema(s.items);\n  return g;\n}\n\nconst MODELS = { openai: 'gpt-4.1-mini', gemini: 'gemini-3.8-flash' };\n\nconst out = [];\nfor (const item of $input.all()) {\n  const j = item.json;\n  const provider = j.provider === 'gemini' ? 'gemini' : 'openai';\n  const model = MODELS[provider];\n\n  const _meta = {\n    prompt_name: j.prompt_name ?? 'unknown',\n    prompt_version: j.prompt_version ?? null,\n    component: j.component ?? 'unknown',\n    trace_id: j.trace_id ?? null,\n    doc_id: j.doc_id ?? null,\n    provider,\n    model,\n    started_at: Date.now(),\n  };\n\n  if (provider === 'gemini') {\n    out.push({\n      json: {\n        _meta,\n        provider,\n        model,\n        // The thinking budget is zero and it is set here, not hoped for: a reasoning model\n        // would break the project's own cost discipline in the one place nobody looks.\n        gemini: {\n          systemInstruction: { parts: [{ text: j.system }] },\n          contents: [{ role: 'user', parts: [{ text: j.user }] }],\n          generationConfig: {\n            temperature: 0,\n            responseMimeType: 'application/json',\n            responseSchema: toGeminiSchema(j.schema),\n            thinkingConfig: { thinkingBudget: 0 },\n          },\n        },\n      },\n    });\n    continue;\n  }\n\n  out.push({\n    json: {\n      _meta,\n      provider,\n      model,\n      temperature: 0,\n      messages: [\n        { role: 'system', content: j.system },\n        { role: 'user', content: j.user },\n      ],\n      response_format: {\n        type: 'json_schema',\n        json_schema: { name: j.prompt_name ?? 'response', strict: true, schema: j.schema },\n      },\n    },\n  });\n}\nreturn out;"
+      },
+      "id": "build-request",
+      "name": "Build request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        220,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ model: $json.model, temperature: $json.temperature, messages: $json.messages, response_format: $json.response_format }) }}",
+        "options": {
+          "timeout": 60000,
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "call-openai",
+      "name": "OpenAI gpt-4.1-mini",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        40
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "openAiApi": {
+          "id": "BIND_ME_openAiApi",
+          "name": "PRDGenie doer provider — bind with bind-provider-credential.mjs"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse, and decide honestly whether this is a result or a park.\n//\n// BUG-011: every provider failure except one used to be recorded as `llm_timeout`, which\n// sent whoever read it to look at latency and network. The classifier below is a COPY of\n// review-ui/llm-errors.mjs (a Code node cannot import); verify-degradation.mjs runs both\n// copies over the same cases and fails when they disagree.\nfunction classifyProviderError(err) {\n  const status = Number(err?.status ?? err?.httpCode ?? err?.response?.status ?? 0);\n  const code = String(err?.code ?? '');\n  const message = String(err?.message ?? '');\n  const text = `${code} ${message}`.toLowerCase();\n\n  // Ordered, and the order is load-bearing: a 401 whose message happens to contain the\n  // word \"timeout\" is an auth failure, not a timeout.\n  if (code === 'context_length_exceeded') return 'llm_malformed_json';\n  if (status === 401 || status === 403\n    || /unauthor|forbidden|invalid[_ ]api[_ ]key|api key|credential|authenticat/.test(text)) {\n    return 'llm_unauthorized';\n  }\n  // An exhausted BALANCE is not rate limiting. It arrives as a 429 with an\n  // `insufficient_quota` code, so it must be matched before the rate-limit clause or it\n  // borrows a code that means \"wait, it will pass\" — and this one never passes on its own.\n  // Found by a real outage rather than a drill (BUG-036).\n  if (/insufficient[_ ]quota|no credits|credit balance|billing|exceeded your current quota|add credits/.test(text)) {\n    return 'llm_no_credit';\n  }\n  if (status === 429 || /rate[_ ]limit|too many requests|quota/.test(text)) return 'llm_rate_limited';\n  if (status === 408\n    || /timeout|timed out|etimedout|esockettimedout|econnaborted/.test(text)\n    || /connection was aborted/.test(text)) {\n    return 'llm_timeout';\n  }\n  return 'llm_error';\n}\n\n//\n// One retry already happened at the HTTP node. If we still cannot parse, the run parks as\n// `needs_review` with a machine-readable reason — never a partial result, and never a\n// second vendor (docs/architecture.md, degradation table).\n//\n// TWO PROVIDERS ARRIVE HERE (E7-S5) and are read by the SAME classifier. Only the shape of\n// the reply differs, so only the shape is normalised below: where the text is, where the\n// token counts are, and where the error object lives. A second classifier would be a second\n// place for BUG-011 to happen.\n// WHICH ATTEMPT THIS IS, asked rather than assumed. `Build retry` throws when it has not\n// run, which is exactly the question \"is this the first attempt?\" — and it is asked of the\n// execution rather than tracked in a variable that a second pass would not share.\n// BUG-041. A provider's error message is BOILERPLATE-FIRST and SPECIFIC-LAST. Google's quota\n// error spends its first 220 characters on prose and two documentation URLs, and then names the\n// metric — which is the only part that says WHICH quota was exceeded, and so whether this is a\n// daily cap, a rate limit, or a key that never reached the paid tier. A head truncation throws\n// away exactly the half worth storing, and on 2026-09-04 it did: the record could not tell those\n// three apart and the diagnosis had to come from counting calls per hour instead.\n//\n// The cap stays. An unbounded provider string in a database column is how a log becomes a\n// liability. What changes is how the cap is SPENT: both ends, and the join is visible so nobody\n// reads a spliced string as a whole one.\nconst bounded = (s, n = 300) => {\n  const t = String(s ?? '').replace(/\\s+/g, ' ').trim();\n  if (t.length <= n) return t;\n  const head = Math.ceil((n - 5) * 0.55);\n  return `${t.slice(0, head)} … ${t.slice(t.length - (n - 5 - head))}`;\n};\n\nlet meta;\ntry {\n  meta = $('Build retry').first().json._meta;\n} catch {\n  meta = $('Build request').first().json._meta;\n}\nconst latency_ms = Date.now() - meta.started_at;\nconst isGemini = meta.provider === 'gemini';\nconst out = [];\n\nfor (const item of $input.all()) {\n  const r = item.json ?? {};\n  const base = {\n    envelope_version: '1.0',\n    trace_id: meta.trace_id,\n    doc_id: meta.doc_id,\n    component: meta.component,\n    _call: {\n      prompt_name: meta.prompt_name,\n      prompt_version: meta.prompt_version,\n      component: meta.component,\n      model: meta.model,\n      latency_ms,\n      prompt_tokens: isGemini ? (r?.usageMetadata?.promptTokenCount ?? null) : (r?.usage?.prompt_tokens ?? null),\n      completion_tokens: isGemini ? (r?.usageMetadata?.candidatesTokenCount ?? null) : (r?.usage?.completion_tokens ?? null),\n      attempt: meta.attempt ?? 1,\n    },\n  };\n\n  if (r.error) {\n    // Gemini reports {error:{code:429, status:'RESOURCE_EXHAUSTED', message}}; OpenAI reports\n    // {error:{status?, code:'insufficient_quota', message}}. Normalised into the one shape the\n    // classifier reads, so the classifier itself stays identical to its two copies.\n    const e = r.error?.error ?? r.error;\n    const err = isGemini\n      ? { status: Number(e?.code) || 0, code: String(e?.status ?? ''), message: String(e?.message ?? '') }\n      : e;\n    out.push({ json: { ...base, status: 'needs_review', payload: { reason: classifyProviderError(err), missing: [], detail: bounded(e?.message) } } });\n    continue;\n  }\n\n  const content = isGemini\n    ? r?.candidates?.[0]?.content?.parts?.[0]?.text\n    : r?.choices?.[0]?.message?.content;\n  if (!content) {\n    out.push({ json: { ...base, status: 'needs_review', payload: { reason: 'llm_error', missing: [], detail: `no content returned: ${JSON.stringify(r).slice(0, 240)}` } } });\n    continue;\n  }\n\n  try {\n    out.push({ json: { ...base, status: 'ok', payload: JSON.parse(content) } });\n  } catch (e) {\n    out.push({ json: { ...base, status: 'needs_review', payload: { reason: 'llm_malformed_json', missing: [], detail: String(e.message).slice(0, 200) /* head-truncated on purpose: a JSON parse error is specific-first */ } } });\n  }\n}\nreturn out;"
+      },
+      "id": "parse-response",
+      "name": "Parse or park",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        700,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Cost accounting\n\nToken counts are **provider-reported**, never estimated from characters. Unit prices come from a local table, so rows are labelled `estimated` — a correction can sit beside them later instead of overwriting them (docs/traceability.md).\n\nThis write is **continue-on-failure**: observability may fail, the product may not.",
+        "height": 260,
+        "width": 360,
+        "color": 6
+      },
+      "id": "note-cost",
+      "name": "About cost logging",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        920,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:3000/internal/llm-call",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ ...$json._call, trace_id: $json.trace_id, outcome: $json.status }) }}",
+        "options": {
+          "timeout": 5000,
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "log-call",
+      "name": "Log the call",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "prdgenieInternalKey",
+          "name": "PRDGenie Internal Service Key"
+        }
+      },
+      "position": [
+        960,
+        120
+      ],
+      "onError": "continueRegularOutput",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Return the envelope the caller asked for. The logging response is discarded: whether\n// telemetry succeeded must never change what the pipeline returns.\nreturn $('Parse or park').all();"
+      },
+      "id": "return-envelope",
+      "name": "Return envelope",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1440,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "is-gemini",
+              "leftValue": "={{ $json.provider }}",
+              "rightValue": "gemini",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "which-provider",
+      "name": "Which provider",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        460,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/{{ $json.model }}:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.gemini) }}",
+        "options": {
+          "timeout": 60000,
+          "response": {
+            "response": {
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "call-gemini",
+      "name": "Gemini Flash (judge)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        700,
+        240
+      ],
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "BIND_ME_googlePalmApi",
+          "name": "PRDGenie judge provider — bind with bind-provider-credential.mjs"
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 2000
+    },
+    {
+      "parameters": {
+        "content": "## Two vendors, one door\n\n**The grader is never the doer** (ADR 0001). The doer is OpenAI `gpt-4.1-mini`; the judge is Google `gemini-3.8-flash` with its thinking budget at **0**, so both sides of the project stay non-reasoning.\n\nThey share this workflow on purpose: one classifier, one cost row, one envelope. A judge with its own private path to a provider would be a second place for a key to live and a second place for a failure to be recorded differently.\n\n**There is no fallback between them.** If Gemini is unavailable the sweep is RECORDED AS SKIPPED (E7-S5); it never quietly becomes an OpenAI opinion.\n\n**Both nodes retry the same way, and the drill counted it: 22 calls against a refusing server produced 44 requests.** So a 5xx IS retried even though `neverError` keeps it out of the error path — the retry is a second attempt, and only the second reply is classified. Measured, not assumed (E7-S5).",
+        "height": 420,
+        "width": 380
+      },
+      "id": "note-providers",
+      "name": "About the two providers",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        420,
+        -300
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "unparseable",
+              "leftValue": "={{ $('Parse or park').first().json.payload.reason }}",
+              "rightValue": "llm_malformed_json",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "first-try",
+              "leftValue": "={{ $('Parse or park').first().json._call.attempt }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "retry-bad-answer",
+      "name": "Retry a bad answer?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1200,
+        120
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// THE SECOND ATTEMPT. The same request, unchanged, with the attempt stamped on it.\n//\n// It is the same bytes on purpose: a retry that changed the prompt, the temperature or the\n// schema would be a different experiment, and the two rows in `llm_calls` would no longer be\n// comparable — which is the whole point of recording them separately.\n//\n// WHAT IT ACTUALLY BUYS, stated rather than implied: at temperature 0 this is not a fresh\n// sample. It buys the small non-determinism the provider has left, and it is cheap. The\n// durable value is the ATTEMPT-2 RATE (docs/traceability.md): a model that starts returning\n// unparseable JSON more often says so here before it says so anywhere else.\nconst first = $('Build request').first().json;\nreturn [{\n  json: {\n    ...first,\n    _meta: { ...first._meta, attempt: 2, started_at: Date.now() },\n  },\n}];"
+      },
+      "id": "build-retry",
+      "name": "Build retry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        320
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## One retry, for one kind of failure\n\n**A bad ANSWER is retried; no answer is not.** An unparseable reply may parse on the\nsecond ask; an auth failure, an empty balance or a rate limit will not, and asking\nagain would spend money on a condition that cannot pass.\n\n**Both attempts write their own `llm_calls` row.** One merged row would hide the\nsignal `docs/traceability.md` names: the attempt-2 rate is how a model returning\nmalformed JSON more often announces itself.\n\n**Bounded at two by the attempt itself**, not by a counter somebody has to maintain:\nthe condition is `attempt == 1`, so a second failure parks with the reason it always\nwould have.",
+        "height": 340,
+        "width": 400
+      },
+      "id": "note-retry",
+      "name": "About the retry",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1160,
+        -260
+      ]
+    }
+  ],
+  "connections": {
+    "Called by another workflow": {
+      "main": [
+        [
+          {
+            "node": "Build request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build request": {
+      "main": [
+        [
+          {
+            "node": "Which provider",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI gpt-4.1-mini": {
+      "main": [
+        [
+          {
+            "node": "Parse or park",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse or park": {
+      "main": [
+        [
+          {
+            "node": "Log the call",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log the call": {
+      "main": [
+        [
+          {
+            "node": "Retry a bad answer?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Which provider": {
+      "main": [
+        [
+          {
+            "node": "Gemini Flash (judge)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenAI gpt-4.1-mini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini Flash (judge)": {
+      "main": [
+        [
+          {
+            "node": "Parse or park",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry a bad answer?": {
+      "main": [
+        [
+          {
+            "node": "Build retry",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return envelope",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build retry": {
+      "main": [
+        [
+          {
+            "node": "Which provider",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "errorWorkflow": "prdgenieWF4error"
+  },
+  "tags": [
+    {
+      "name": "prdgenie"
+    }
+  ]
+}

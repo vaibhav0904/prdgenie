@@ -1,0 +1,18 @@
+{
+  "id": "C4",
+  "title": "ambiguity detection",
+  "verdict": "PASS",
+  "produced_at": "2026-09-05T12:08:17.943Z",
+  "prompt_versions": [
+    "7f9c3916173e",
+    "7393cee3e7aa",
+    "ed52ca31c41b",
+    "f3e129ba50f0",
+    "fe9372faa9ca",
+    "a58bfce566cb"
+  ],
+  "models": [
+    "gpt-4.1-mini"
+  ],
+  "headline": null
+}

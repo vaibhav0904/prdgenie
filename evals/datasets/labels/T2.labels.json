@@ -1,0 +1,139 @@
+{
+  "fixture_id": "T2",
+  "rule": "Labels written BEFORE any tuning. Never edit labels to match output.",
+  "written": "2026-09-01",
+  "expected_requirements": [
+    {
+      "label_id": "T2-R01",
+      "kind": "nonfunctional",
+      "statement": "The first chart renders in under two seconds on a standard workspace and under four seconds on Northwind's largest workspace.",
+      "stakeholder": "Marcus (Head of Product)",
+      "quotes": [
+        "The first chart renders in under two seconds on a standard workspace, and under four seconds on Northwind's largest workspace."
+      ]
+    },
+    {
+      "label_id": "T2-R02",
+      "kind": "constraint",
+      "statement": "A separate pre-aggregation store is stood up alongside the warehouse, built by a nightly pipeline.",
+      "stakeholder": "Priya (Eng Lead)",
+      "quotes": [
+        "To get four I need to pre-aggregate, and pre-aggregation does not fit in the warehouse.",
+        "We are standing up a separate aggregation store alongside it, and there is a nightly pipeline that builds it."
+      ]
+    },
+    {
+      "label_id": "T2-R03",
+      "kind": "functional",
+      "statement": "A scheduled dashboard report can be sent as either a PDF or a CSV, to up to twenty recipients per schedule.",
+      "stakeholder": "Dana (Customer Success)",
+      "quotes": [
+        "the scheduled report has to go out as a PDF or a CSV, sender's choice",
+        "It goes to a distribution list.",
+        "a scheduled dashboard report can be sent as a PDF or a CSV, to up to twenty recipients per schedule"
+      ]
+    },
+    {
+      "label_id": "T2-R04",
+      "kind": "functional",
+      "statement": "A user can leave a comment pinned to a specific chart, visible to everyone with access to that dashboard; a plain comment only, with no threads, mentions or notifications.",
+      "stakeholder": "Tom (Sales)",
+      "quotes": [
+        "A user can leave a comment pinned to a specific chart, and everyone with access to that dashboard can see it.",
+        "A comment on a chart, not threads, not mentions, not notifications."
+      ]
+    },
+    {
+      "label_id": "T2-R05",
+      "kind": "functional",
+      "statement": "Every chart lets the user export the rows underlying it as CSV.",
+      "stakeholder": "Priya (Eng Lead)",
+      "quotes": [
+        "Every chart must let the user export its underlying rows as CSV."
+      ]
+    },
+    {
+      "label_id": "T2-R06",
+      "kind": "constraint",
+      "statement": "ForgeSight authenticates users through the customer's own SAML identity provider and stores no passwords itself.",
+      "stakeholder": "Priya (Eng Lead)",
+      "quotes": [
+        "ForgeSight must authenticate users through the customer's own SAML identity provider, and we store no passwords ourselves."
+      ]
+    },
+    {
+      "label_id": "T2-R07",
+      "kind": "nonfunctional",
+      "statement": "Data access is scoped by role so a regional manager sees only rows for their own region, enforced in the query.",
+      "stakeholder": "Priya (Eng Lead)",
+      "quotes": [
+        "Access is scoped by role, so a regional manager only sees rows for their own region."
+      ]
+    },
+    {
+      "label_id": "T2-R08",
+      "kind": "constraint",
+      "statement": "The pilot must be in front of Northwind by 30 November 2026.",
+      "stakeholder": "Marcus (Head of Product)",
+      "quotes": [
+        "The pilot has to be in front of Northwind by the thirtieth of November."
+      ]
+    }
+  ],
+  "expected_open_questions": [
+    {
+      "label_id": "T2-Q01",
+      "kind": "unanswered",
+      "question": "The twenty-recipient cap is a rounded guess off one customer's distribution list, not a stated limit. Whether twenty is a hard ceiling was never asked or answered.",
+      "quotes": [
+        "Halcyon's list is fourteen. Round it up."
+      ]
+    },
+    {
+      "label_id": "T2-Q02",
+      "kind": "unanswered",
+      "question": "T1 fixed the refresh at hourly; T2 introduces a nightly pre-aggregation build. Whether a dashboard can still be hourly-fresh on top of a nightly aggregation was never reconciled in the room.",
+      "quotes": [
+        "there is a nightly pipeline that builds it"
+      ]
+    }
+  ],
+  "expected_delta": {
+    "modified": [
+      {
+        "of_label": "T1-R01",
+        "new_statement": "The first chart renders in under two seconds on a standard workspace and under four seconds on Northwind's largest workspace. The single two-second figure from T1 is relaxed for the largest account only.",
+        "quotes": [
+          "The first chart renders in under two seconds on a standard workspace, and under four seconds on Northwind's largest workspace."
+        ]
+      },
+      {
+        "of_label": "T1-R06",
+        "new_statement": "A scheduled dashboard report can be sent as a PDF or a CSV, to up to twenty recipients per schedule. T1 said PDF only, to the requesting user.",
+        "quotes": [
+          "the scheduled report has to go out as a PDF or a CSV, sender's choice",
+          "a scheduled dashboard report can be sent as a PDF or a CSV, to up to twenty recipients per schedule"
+        ]
+      }
+    ],
+    "contradicted": [
+      {
+        "of_label": "T1-R13",
+        "prd_quote": "We read from the existing warehouse. No second database, no new pipeline.",
+        "new_quote": "We are standing up a separate aggregation store alongside it, and there is a nightly pipeline that builds it."
+      }
+    ],
+    "added": [
+      {
+        "label_id": "T2-R04",
+        "statement": "A user can leave a comment pinned to a specific chart, visible to everyone with access to that dashboard; no threads, mentions or notifications.",
+        "quotes": [
+          "A user can leave a comment pinned to a specific chart, and everyone with access to that dashboard can see it.",
+          "A comment on a chart, not threads, not mentions, not notifications."
+        ]
+      }
+    ],
+    "unchanged_restated": ["T1-R05", "T1-R07", "T1-R09", "T1-R10"]
+  },
+  "notes": "T2 is written AGAINST T1 and is the fixture for C5. The delta is exactly four items: 2 modified (T1-R01, T1-R06), 1 contradicted (T1-R13), 1 added (chart comments). THE TRAP: T2 restates four T1 requirements almost verbatim - the pilot date (T1-R05), CSV export (T1-R07), SAML SSO (T1-R09) and row-level scoping (T1-R10). These are listed in unchanged_restated and must NOT appear anywhere in the delta. Any of them appearing as added, modified or contradicted is churn, and C5 requires churn = 0. The audit log (T1-R11) is a fifth trap of a weaker kind: it is reaffirmed ('Still on, still as written, no change.') without being restated in full, so it is not an extractable requirement of T2 and must equally not appear in the delta. prd_quote on the contradicted item is a verbatim substring of T1's raw_text, not T2's - it names the position being contradicted; new_quote is the T2 substring. T2-Q02's quote overlaps T2-R02's second quote region; that is deliberate and permitted, an open question and a requirement may be drawn from the same sentence. T1-R01 is scored as modified, not contradicted: a relaxed number is a change of degree. T1-R13 is scored as contradicted, not modified, because the new position asserts the opposite of what the old one forbade."
+}
