@@ -12,9 +12,6 @@ node_modules/
 # Raw n8n exports before credential stripping. Only n8n/workflows/ ships.
 n8n/exports/raw/
 
-# The method kit is a read-only reference with its own git history.
-agentic-build-kit/
-
 # The run manifest is derived state, rewritten by every produce and pointing at row ids in
 # a database that is itself untracked. Tracking it made the tree permanently dirty, which
 # is how the next thing that should not be committed gets committed (BUG-015).
@@ -36,11 +33,6 @@ data/backup/
 # every double-click of 2-SET-UP-THE-DEMO.cmd, and meaningless on anyone else's machine.
 deliverables/.demo-state.json
 deliverables/.demo-status.html
-
-# The generated demo video (deliverables/video/): rendered by the sibling project
-# prdgenie-video, 40-120 MB, at the GitHub per-file limit. render.json beside it says how it
-# was made; the file itself is handed over, not committed.
-deliverables/video/
 
 # The one-mutator-at-a-time lock (BUG-054). Held by whichever sweep or deploy is running; never committed.
 .exclusive.lock
