@@ -254,7 +254,7 @@ excluded.
 | | |
 |---|---|
 | Setting it up when n8n is hosted, and the fresh-copy walk-through | `deliverables/SETUP.md` |
-| The nine slides | `deliverables/deck/presentation.html` |
+| The nine slides | `deliverables/deck/presentation.html` — live at https://vaibhav0904.github.io/prdgenie/deliverables/deck/presentation.html |
 | The presenter's run sheet | `deliverables/deck/presenter.html` |
 | The demo video, 6:25 | `deliverables/deck/prd-genie-demo.mp4`, beside the slides it was made from. Generated from this deck's run sheet by the sibling repository *prdgenie-video* (narrator: Sarvam bulbul:v3, speaker rahul). That project needs npm packages and this one has none (ADR 0009), which is why the generator lives beside this repository and only the film is here. Every product moment in the film is footage of the live app, not a mock-up. |
 | The problem, and the program charter | `deliverables/problem-and-approach.md`, `deliverables/program-charter.md` |

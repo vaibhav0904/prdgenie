@@ -146,8 +146,8 @@ AI, end to end** — the slides, the script, the voiceover and the footage. My p
 checking the content, going through the script, and watching the final cut. That is not a
 footnote; it is part of the point.
 
-**Watch it:** [`deliverables/deck/prd-genie-demo.mp4`](deliverables/deck/prd-genie-demo.mp4) (6:25), next to
-[the nine slides](deliverables/deck/presentation.html) it was made from.
+**Watch it:** [the demo film](https://vaibhav0904.github.io/prdgenie/deliverables/deck/prd-genie-demo.mp4) (6:25), and click through [the nine slides](https://vaibhav0904.github.io/prdgenie/deliverables/deck/presentation.html)
+it was made from — both open in the browser. The files are in [`deliverables/deck/`](deliverables/deck/).
 
 - The deck is not a slide file. It is [`deliverables/deck/slides.mjs`](deliverables/deck/slides.mjs)
   — one source that builds both the presentation and the presenter's run sheet, with a guard that
@@ -181,7 +181,7 @@ badly.
 | The workflows, credential-free | [`n8n/workflows/`](n8n/workflows/) |
 | Prompts — the source of truth, hashed into the workflows | [`n8n/prompts/`](n8n/prompts/) |
 | Fixtures and their labels | [`evals/datasets/`](evals/datasets/) |
-| The nine slides | [`deliverables/deck/presentation.html`](deliverables/deck/presentation.html) |
+| The nine slides, live | [open the slides](https://vaibhav0904.github.io/prdgenie/deliverables/deck/presentation.html) · source: [`deliverables/deck/slides.mjs`](deliverables/deck/slides.mjs) |
 
 **Stack:** n8n in Docker for orchestration · Node 22+ with **zero npm dependencies** · SQLite via
 `node:sqlite` · a vanilla-JS review UI, no framework · `gpt-4.1-mini` as the doer and

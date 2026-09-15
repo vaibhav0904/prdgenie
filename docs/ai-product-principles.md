@@ -216,7 +216,7 @@ shows; cost beside the quality it bought. → [reporting.md, rule 5](reporting.m
 
 ### 42. Every number says what it was counted over
 Counted over everything stored, approval took **one second** — those were automated tests signing
-things off. Counted over real runs only: **two minutes**. Both columns ship. → [deck, slide 7](../deliverables/deck/presentation.html)
+things off. Counted over real runs only: **two minutes**. Both columns ship. → [deck, slide 7](https://vaibhav0904.github.io/prdgenie/deliverables/deck/presentation.html#7)
 
 ### 43. Recompute independently
 The shipped SQL and a separate JavaScript recomputation from raw rows agree on 8 of 8 figures. → [metrics.md](metrics.md)
