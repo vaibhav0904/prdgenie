@@ -23,7 +23,7 @@ The dead-letter queue has been recording it correctly the whole time — WF4 did
 
 ## Two separate faults, and they must not be confused
 
-1. **The mapping node throws** on a real multipart release. That is the one that matters:
+1. **The mapping node throws** on a real multipart submission. That is the one that matters:
    the door accepts, the workflow starts, `Map form input` fails, and the caller still gets
    200 because the form trigger has already replied. **A door that answers before it has
    stored anything cannot report its own failure** — which is the BUG-005/006 family arriving
@@ -54,7 +54,7 @@ curl -s -X POST http://localhost:5678/form/prdgenie-ingest-form \
 1. **What `Map form input` actually receives.** The node reads `item.json['Product']` and
    friends, all with `??` guards, so "cannot read properties of undefined" means `item.json`
    itself is undefined — not a missing field. Suspect the `formTrigger` **typeVersion 2.2**
-   output shape: a multipart release may arrive as a binary-bearing item whose `json` is
+   output shape: a multipart submission may arrive as a binary-bearing item whose `json` is
    empty. Log the shape before changing the mapping.
 2. **Then the truncated message.** `"Cannot read properties of undefined"` has had the property
    name cut off — the same defect as BUG-041, in the dead-letter envelope this time. Fixing
@@ -72,7 +72,7 @@ jumps the queue ahead of E6-S2, which has been returned to the backlog with its 
 **`verify-doors.mjs` 8/8, twice. The form door stores documents again** (`DOC-2026-1337`, the
 first since 2 September), and both doors produce the identical canonical document.
 
-**The door was refusing correctly the whole time.** n8n binds a form release by **index** —
+**The door was refusing correctly the whole time.** n8n binds a form submission by **index** —
 `field-0`, `field-1` — never by the label a human sees. The checker posted four indexed fields,
 written when the form had four. **E4-S6 inserted "Who wrote this?" as the third field**, and
 everything below it moved by one: the document text went into the authorship dropdown, and the

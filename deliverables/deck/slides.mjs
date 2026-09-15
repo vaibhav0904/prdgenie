@@ -147,7 +147,7 @@ export const RUNBOOK = {
 // The first rewrite put the words in his register and left the ideas in mine. He watched the
 // generated video and said so: "very, very technical… everything is coming in small, small
 // breaks… I am not able to visualize it entirely as one system." The point of the video agrees with
-// him — the video is for "technical and non-technical audiences" and is not scored.
+// him — a demo video has to work for technical and non-technical viewers alike.
 //
 // So, this time:
 //   • ONE PICTURE of the whole system on slide 2, and the same picture as a strip on every demo
@@ -470,7 +470,7 @@ export const SLIDES = [
           ['<strong>No number on these slides was written by the AI</strong>', 'every figure is counted from the stored data. A second AI, from a different vendor, judges quality afterwards and gates nothing.'],
         ],
       },
-      { type: 'note', text: 'Built one story at a time: 109 stories done, 11 recorded decisions, and every defect found mid-story became its own card. 61 closed, 24 open and written down.' },
+      { type: 'note', text: 'Built one story at a time: 112 stories done, 10 recorded decisions, and every defect found mid-story became its own card. 64 closed, 24 open and written down.' },
     ],
     command: {
       cmd: '.\\run.cmd check-all.mjs',

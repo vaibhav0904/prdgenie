@@ -38,7 +38,7 @@
 ## Technical notes
 
 - **The harness must not call a model provider, for any purpose including matching**
-  (ADR 0004, ADR 0008). A single provider call inside the stranger would make the headline
+  (ADR 0004, ADR 0008). A single provider call inside the grader would make the headline
   accuracy figure a model's opinion — the exact thing this project refuses everywhere else.
 - Grading reads the database; it never re-runs the pipeline. Separation is the rule
   (`evals/README.md` rule 3).
@@ -67,7 +67,7 @@ through the E1-S3/S4/S6 review page, which is the G6 criterion this story needed
 ### What this story actually delivered, and what it did not
 
 **Delivered:** a measurement nobody can argue their way out of. Span-overlap matching with no
-similarity metric, no embedding, no threshold and no model anywhere in the stranger; per-fixture
+similarity metric, no embedding, no threshold and no model anywhere in the grader; per-fixture
 reporting rather than an average that hides a failure; a per-item diff naming every miss and
 every false positive by id; result files that are never overwritten; a non-zero exit; and a
 coverage assertion so a skipped fixture fails the case instead of vanishing (BUG-003).

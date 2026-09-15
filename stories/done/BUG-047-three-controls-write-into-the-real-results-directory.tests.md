@@ -18,14 +18,14 @@
 | TC3 | **`evals/results/` is unchanged by a full pass of the controls** | 370 → 370 | **Pass** | counted before and after running all five plus verify-grading |
 | TC4 | **The rule is enforced by a derived check**, not a convention | scans, not lists | **Pass** | `verify-results-hygiene.mjs`: 5 caller files found by scanning two directories; nothing typed |
 | TC5 | **CONTROL: a caller that does not redirect turns it red and names the file** | red, named | **Pass** | `RESULTS_HYGIENE_INJECT=…` → *"negative-control-planted.mjs (1 of 1 calls unredirected)"*, 2/3 |
-| TC6 | **A filename in a list is not a call** | not counted | **Pass** | `verify-judge-isolation` enumerates gate files and `verify-grading` names its instrument; neither runs the stranger, and the detector requires `execFileSync`/`spawnSync`/`node(` on the line |
+| TC6 | **A filename in a list is not a call** | not counted | **Pass** | `verify-judge-isolation` enumerates gate files and `verify-grading` names its instrument; neither runs the grader, and the detector requires `execFileSync`/`spawnSync`/`node(` on the line |
 | TC7 | **A declaration must describe a real caller** | 1 of 1 | **Pass** | TC3 in that check. `produce.mjs` was declared and **does not grade** — it prints the command in a message — so the declaration was removed rather than kept as a rule protecting nothing |
 | TC8 | **S2-TC7 no longer depends on ambient state** | seeded | **Pass** | it now grades once into its own temp directory to establish a baseline; it used to read the real `evals/results/`, so *"leaves the earlier one untouched"* passed vacuously whenever nothing had been left there |
 | TC9 | **The controls still pass** — the redirect changed where they write, not what they assert | all green | **Pass** | c3, c4, c6, refusal, verify-grading 12/12 |
 
 ## What this found beyond the card
 
-- **`produce.mjs` was declared as a publisher and does not call the stranger at all.** The
+- **`produce.mjs` was declared as a publisher and does not call the grader at all.** The
   declaration came from my own reading of a `grep` hit that was a `console.log`. The check
   caught it on its first run (TC3), which is the argument for a declaration that has to keep
   describing something real.

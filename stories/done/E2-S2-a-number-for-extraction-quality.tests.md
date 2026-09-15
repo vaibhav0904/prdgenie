@@ -14,7 +14,7 @@ the case itself runs as `.\run.cmd evals/harness/grade.mjs C1`.
 | TC5 | T1 and T3 are reported separately, never as one average | Two score blocks, two verdicts | **Pass** | Two table rows, two per-item diff sections, no combined figure anywhere |
 | TC6 | The result file carries what a reader needs to argue with it | Dataset size, graded version, score vs threshold, per-item diff naming every miss and every false positive, `## Verdict:` | **Pass** | Every result file carries all six; the degraded control named all 17 misses individually |
 | TC7 | Result files are never overwritten | A second run on the same date writes a new file and leaves the first intact | **Pass** | 7 → 8 files; the first is byte-identical afterwards |
-| TC8 | The harness never calls a model provider, for any purpose | No provider host, no credential, no network call to a model anywhere in the stranger | **Pass** | No provider host, credential or endpoint in any of the three instrument files |
+| TC8 | The harness never calls a model provider, for any purpose | No provider host, no credential, no network call to a model anywhere in the grader | **Pass** | No provider host, credential or endpoint in any of the three instrument files |
 | TC9 | **Negative control** — C1 can go red | Degrade extraction deliberately; C1 fails naming the missed requirements; restore | **Pass** | Prompt clause restricting extraction to "requirements that mention email": T1 recall 92.9% → **14.3%**, T3 100% → **16.7%**, 17 misses named. Restored; version back to `7267c39b005e` |
 | TC10 | A failing case is a failing exit code | `grade.mjs` exits non-zero when any case fails | **Pass** | Verdict read from the run's own output, not assumed: case failed and exit=1 |
 | TC11 | Coverage is asserted (BUG-003) | Fixtures graded vs fixtures the case names; a gap fails the case rather than being reported as a footnote | **Pass** | T3 removed from the manifest → exit=1 and the result says `**NOT GRADED: T3**` |
@@ -27,7 +27,7 @@ the case itself runs as `.\run.cmd evals/harness/grade.mjs C1`.
   can only pass when the model happens to misbehave is not a check. `verify-grading.mjs`
   hands the matcher two fabricated requirements overlapping one label and asserts the
   arithmetic.
-- **TC8 matters more than it looks.** A single provider call inside the stranger would make
+- **TC8 matters more than it looks.** A single provider call inside the grader would make
   the headline accuracy figure a model's opinion about a model — the exact thing this
   project refuses everywhere else (ADR 0004, ADR 0008).
 - **`kind` must agree for a match** (E2-S2 acceptance criteria). That is strict: a

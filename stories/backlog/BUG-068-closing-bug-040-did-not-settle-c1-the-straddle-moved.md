@@ -49,13 +49,13 @@ The **deck says it**. Slide 9 — the honest-limitations slide that survives any
 with this, because a release that shows its own eval case moving between runs is worth more
 than one that quotes a median and hopes nobody re-runs it.
 
-`deliverables/RELEASE.md` records the spread verdict as **PASS ×2, FAIL ×1**, not as PASS.
+The release checklist of the day (since removed) recorded the spread verdict as **PASS ×2, FAIL ×1**, not as PASS.
 
 ## The real fix, for after the release
 
 Three candidates, in the order they should be tried:
 
-1. **Report C1 as a range by construction.** The stranger currently emits a per-run verdict; the
+1. **Report C1 as a range by construction.** The grader currently emits a per-run verdict; the
    publication unit should be the spread, so a single run cannot be quoted at all.
 2. **Ask whether a per-fixture floor is the right instrument.** A floor that some fixture
    crosses one run in three, with a median far above it, may be measuring variance rather than

@@ -117,7 +117,7 @@ It must:
 **What it does not do:** decide anything. The page presents; the human judges. It must never
 pre-select an answer, and where it shows the builder's own reading of how output lines up
 against labels, it says so in those words — *orientation, not a verdict* — because the
-stranger computes the real numbers and has not run yet.
+grader computes the real numbers and has not run yet.
 
 **Applies to** eval labels, extraction quality, citation relevance, requirement wording,
 generated PRDs, deltas, reports, any UI copy judged for tone — and to PRD approvals and
@@ -253,6 +253,6 @@ cannot make.
 ## Lesson (fill when resolved — what this cost, and what prevents a recurrence)
 ```
 
-The `## Lesson` line is the highest-value field in this whole kit. When it
+The `## Lesson` line is the highest-value field in this whole method. When it
 names a trap that will recur, promote it into `CLAUDE.md`'s Gotchas **in the
 same story**.

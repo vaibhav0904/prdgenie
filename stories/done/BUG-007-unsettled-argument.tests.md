@@ -1,6 +1,6 @@
-undefined Pass | undefined Pass. full verifier sweep green after the change || undefined Pass. `verify-unsettled` 28/28 twice, identical || undefined Pass. C1 and C2 pass 3 of 3 (runs 33-35) || undefined Pass. none / all-malformed / well-formed all assemble to `in_review` with an identical requirement count || undefined Pass. a fourth reason nothing exercises turns the row red; removed after || undefined Pass. coverage derived from `DROP_REASONS`, 3 of 3 || undefined Pass. both sides kept, grounded by code, stakeholders preserved, one citation sufficient || undefined Pass. three drop reasons, each fired under its own name || undefined **Fail**, and allowed to. `verify-unsettled.mjs` — model-set `grounded` and `match_kind` both refused || undefined Pass. `T1-R05` in 1 of 3 — the same rate as before. **BUG-023 stays open** || undefined Pass. T3 still carries its grounded `conflict` open question; the detector was not touched || undefined Pass. T1 recall 93.3 / 86.7 / 86.7, precision 100.0 x3 || undefined Pass. T3 recall 100.0 x3 || undefined **Pass**, after the code rule. `T3-R07` matched in all three runs; the drawer was not over-filled || undefined Pass. **100.0 x3.** On the prompt change alone it was 87.5 / 87.5 / 77.8 — the model filed the positions AND kept them || undefined Pass. `verify-prompt-hygiene` green, 109 quotes x 2 prompts || # Test cases: BUG-007 — an unsettled argument has somewhere to go
+# Test cases: BUG-007 An unsettled argument has nowhere to go, so it becomes a requirement
 
-Written before the build, per gate G3. **16 of 17 pass; TC8 fails and was allowed to.** **16 of 17 pass; TC8 fails and was allowed to.** The decision it implements, and the four predictions
+Written before the build, per gate G3. **16 of 17 pass; TC8 fails and was allowed to.** The decision it implements, and the four predictions
 it has to survive, are on the card.
 
 ## The trap, named before anything is written
@@ -13,7 +13,9 @@ it has traded a precision defect for a recall defect and made the number look be
 So every row that checks the new box is **paired with a row that checks what must stay out of
 it**, and `T3-R07` is named explicitly rather than being left to the aggregate.
 
-## What is being built. the exclusion bullet now names the destination; a new section says what does *not* belong in it, with an invented worked example || Layer | Change |
+## What is being built
+
+| Layer | Change |
 |---|---|
 | `n8n/prompts/extract-requirements.md` | the exclusion becomes a redirect: an unsettled position goes in `unsettled_positions`, not nowhere. Schema gains the array; a worked invented example shows one document producing both a requirement and an unsettled position |
 | `review-ui/unsettled.mjs` | code owns shape and grounding, exactly as `gaps.mjs` does: a legal entry needs a position and at least one citation; `grounded` is set by `locate()`, never by the model |

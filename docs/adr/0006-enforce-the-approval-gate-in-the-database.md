@@ -4,9 +4,9 @@
 
 ## Context
 
-The whole design turns on "a clear human-in-the-loop review". Nearly every implementation of that
+The whole design turns on a human-in-the-loop review. Nearly every implementation of that
 phrase is a screen with an Approve button and nothing stopping the pipeline from setting
-the same field itself. The kit's test is blunt: *can you draw a path around it?* If the
+the same field itself. The test is blunt: *can you draw a path around it?* If the
 answer is "the code calls things in the right order", it is a convention, not a gate.
 
 There is a second reason to be strict here. This system's entire value proposition is

@@ -50,7 +50,7 @@ requirement was stated is listed, not just the first**. That is a labeling oblig
 a nicety: C1 matches an extracted requirement to a label by span overlap (ADR 0008), so a
 correct extraction that cites the second mention must not score as a miss.
 
-Two consequences a stranger needs to know:
+Two consequences anyone grading against these labels needs to know:
 
 - **A quote may resolve to more than one region.** In E1 the sentence about the
   thirty-minute session timeout appears twice, identically. The label cites both, each
@@ -65,7 +65,7 @@ the text the door actually stored.
 
 ## Reading the `notes` field
 
-Every label file's `notes` is written for the stranger and is part of the answer key, not
+Every label file's `notes` is written for whoever grades against it and is part of the answer key, not
 commentary. It names the traps — the reversed decision in T1, the unchanged restatements
 in T2, the polite conflict in T3, the declined asks in N1, the rhetorical number in F1,
 the requirement-shaped facilities rules in G1, the payload that looks legitimate in H1,

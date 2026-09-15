@@ -156,7 +156,7 @@ AI, end to end.** That is not a footnote; it is part of the point.
 
 The whole application was built the same way: one story at a time, a test plan before any code,
 and every defect found mid-story written up as its own card instead of being folded into the
-work. **109 stories done, 11 recorded decisions, 61 bug cards closed, 24 open.** The record is in
+work. **112 stories done, 10 recorded decisions, 64 bug cards closed, 24 open.** The record is in
 [`stories/`](stories/) and [`stories/STATUS.md`](stories/STATUS.md), including the parts that went
 badly.
 
@@ -169,6 +169,7 @@ badly.
 | The rules the build ran under | [`CLAUDE.md`](CLAUDE.md) |
 | Architecture, and why | [`docs/architecture.md`](docs/architecture.md) · [`docs/adr/`](docs/adr/) |
 | Every simplification, biggest first | [`docs/assumptions.md`](docs/assumptions.md) |
+| The AI product principles behind it, each linked to where it is enforced | [`docs/ai-product-principles.md`](docs/ai-product-principles.md) |
 | Metrics, each with the SQL that computes it | [`docs/metrics.md`](docs/metrics.md) |
 | The problem, and the shape of the answer | [`deliverables/problem-and-approach.md`](deliverables/problem-and-approach.md) |
 | Program charter | [`deliverables/program-charter.md`](deliverables/program-charter.md) |

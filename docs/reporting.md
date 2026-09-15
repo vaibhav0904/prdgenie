@@ -141,5 +141,5 @@ draft was read under a weekly heading and the lifetime figure looked like a week
    more times and quote the wider one.
 7. **The denominator of a spread is part of the figure.** A range over two runs is written as
    a range over two runs, and a `--grade-only` spread — the same produced run graded
-   repeatedly — measures the *stranger's* stability, not the system's, and says so in its own
+   repeatedly — measures the *grader's* stability, not the system's, and says so in its own
    header. Neither is presented as the other.

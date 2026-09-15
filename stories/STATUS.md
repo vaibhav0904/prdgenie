@@ -1,4 +1,4 @@
-# Status — last updated 2026-09-10 (the release package and a hosted-n8n setup path; the README followed from a fresh copy at last, which closed BUG-078, 079, 080 the same day; BUG-077 open)
+# Status — last updated 2026-09-15 (an audit before the repository is shared found the scrub had written nonsense into the prose (BUG-085), a garbled test plan (BUG-086) and a wrong decision count (BUG-087), all closed; BUG-081 to 084 recorded here, which they had not been; BUG-077 open)
 
 The live dashboard. `stories/README.md` is the (static) process description —
 this file is the current state. Updated at every `/prd`, `/story`, `/testplan`,
@@ -44,6 +44,40 @@ for an instance with no Docker shell, rewriting addresses, ids and credential bi
 **BUG-079 — the README demo began at an "Ingest tab" the UI does not have. MINOR, closed.**
 Same walk-through. Step 1 now starts at the form with `show-fixture.mjs T1`; step 4 says
 `grade.mjs C6` needs a produced run first.
+
+**BUG-087 — the decision count counted the template. MINOR, closed.**
+Found 2026-09-15 re-checking the README's figures: "11 recorded decisions" included
+`0000-template.md`. Ten. The deck's count guard now reads the decision count too, and refused the
+old slide before it was corrected.
+
+**BUG-086 — a test plan was overwritten by its own results. MINOR, closed.**
+Found in the same audit: BUG-007's test plan had its title replaced by the evidence column, one
+sentence doubled and a heading fused to a table header, since its first commit. Repaired with no
+result changed; a sweep for the same signatures found no other file.
+
+**BUG-085 — the scrub wrote "stranger" where it meant the grader. MAJOR, closed.**
+Found 2026-09-15 auditing the public repository. A word-for-word substitution turned the eval
+grading code into a person and a form submission into a release, in prose and comments only, so no
+check went red. All 177 changed lines were read in context: 67 edits in 46 files, and four answer-key
+files the scrub had touched restored byte for byte.
+
+**BUG-084 — the film render failed two runs in three on identical input. MAJOR, closed.**
+Found 2026-09-14. Every demo clip had one keyframe, so the renderer's seeks decoded from frame zero
+and intermittently found nothing. Both encoders now place a keyframe every ten frames; the clips
+were re-encoded rather than re-shot.
+
+**BUG-083 — the clone fails on Windows before anyone reads a word. MINOR, closed.**
+Found 2026-09-14 cloning the public repository into a deep folder: twenty story-card paths over
+Windows' limit. Both READMEs now name `git config --global core.longpaths true` before the clone.
+
+**BUG-082 — n8n could not reach itself, and nothing said so. MAJOR, closed.**
+Found 2026-09-14 following SETUP.md shape B: behind a port mapping, WF1's call to its own webhook
+died with an opaque 500. `deploy-hosted.mjs` now warns and takes `N8N_SELF_URL`; the troubleshooting
+table names the symptom.
+
+**BUG-081 — the hosted deploy's dry run could never succeed on a fresh instance. MAJOR, closed.**
+Same walk-through: the id placeholder contained the id it replaced, so the leftover check failed on
+the instance the dry run exists for. The placeholder is opaque now.
 
 **BUG-080 — two hints named the default n8n whatever `.env` said. MINOR, closed.**
 `show-fixture.mjs` printed port 5678 and the preflight said `n8n-local` while `.env` named
@@ -1334,7 +1368,7 @@ happened once during this story.
 **Cost:** about $0.11 across roughly a dozen full nine-fixture runs.
 
 
-**2026-09-01 — Phase 0: the kit installed and day-one docs written.**
+**2026-09-01 — Phase 0: the build method set up and day-one docs written.**
 Constitution (`CLAUDE.md`, 539 words, inside the 750 budget), domain vocabulary,
 contracts, architecture, metrics, traceability, reporting, roadmap, assumptions, the eval
 coverage matrix, eight ADRs, and the Q1/Q2 one-pagers. No code.
@@ -1763,7 +1797,7 @@ correct and unambiguous does not apply because of where it sits*. Three confirma
 **The next run parked all ten fixtures — the OpenAI balance is empty (BUG-036).** What went
 right is most of that story: every run parked with a machine-readable reason, the provider's
 message kept beside the code, nothing half-processed, the producer reported no success and the
-stranger exited non-zero. E7-S4 and BUG-028 earning their keep on a fault nobody staged. What
+grader exited non-zero. E7-S4 and BUG-028 earning their keep on a fault nobody staged. What
 went wrong is the classification — an exhausted balance is not an *unrecognised* failure, and
 it is not self-healing either, so `llm_rate_limited` would be the wrong comfort. That needs a
 decision about a closed set.
@@ -1991,7 +2025,7 @@ before anything is tuned.
 **All four labelled changes are present; one wears the wrong kind.** T1-R06 (scheduled report:
 PDF-only → PDF or CSV, twenty recipients) comes back as `added` rather than `modified`, so it
 names no `req_id`. **Recorded on E6-S5's card, not as a BUG card** — the case that grades kinds
-is the next story, and filing a defect against a prompt whose stranger does not exist yet would
+is the next story, and filing a defect against a prompt whose grader does not exist yet would
 put the fix before the measurement.
 
 **Three decisions are code's, not the model's**: which requirement an item is about (a
@@ -2163,7 +2197,7 @@ was about — and one of the four is a door that WF1 routing runs through.
 ```
 
 **The door had been refusing correctly for two days and the checker was filling the wrong
-boxes.** n8n binds a form release by **index** — `field-0`, `field-1` — never by the label a
+boxes.** n8n binds a form submission by **index** — `field-0`, `field-1` — never by the label a
 human sees. `verify-doors` posted four indexed fields, written when the form had four.
 **E4-S6 inserted "Who wrote this?" as the third field**, and everything below it shifted by one:
 the document text went into the authorship dropdown and the required `Text` field got `''`.
@@ -2251,7 +2285,7 @@ scanning rather than by a list, and goes red on a planted one.
 
 **Three findings that were not on the card:**
 
-- **`produce.mjs` was declared as a publisher and never calls the stranger.** My declaration came
+- **`produce.mjs` was declared as a publisher and never calls the grader.** My declaration came
   from a `grep` hit that was a `console.log` printing the command for a human. The check caught
   it on its first run — the argument for a declaration that must keep describing something real.
 - **A fifth ungraded call** in `verify-grading`. It writes nothing, but a caller outside the

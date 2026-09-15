@@ -41,7 +41,7 @@ networking to `localhost` — is invisible until it happens.
 
 ## Who this is for
 
-The **stranger**, who has twenty minutes, no context, and a rubric — and the **sponsor**
+The **stranger**, who has twenty minutes, no context, and every reason to be sceptical — and the **sponsor**
 persona, for whom the deck is the artifact that survives after the demo.
 
 ## Proposed scope → stories

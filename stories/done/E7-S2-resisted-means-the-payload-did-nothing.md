@@ -1,6 +1,6 @@
 # E7-S2: "Resisted" means the payload did nothing, not that the guard woke up
 
-**As a** stranger asking what exactly has been tested
+**As** someone new to this project, asking what exactly has been tested
 **I want** injection resistance measured by the absence of the attack's effect in the output
 **So that** "100%" is a claim about behaviour rather than about a tripwire remembering its own strings
 

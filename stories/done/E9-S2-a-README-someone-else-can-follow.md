@@ -1,6 +1,6 @@
 # E9-S2: A README someone else can follow
 
-**As a** stranger with twenty minutes
+**As** someone new to this project, with twenty minutes
 **I want** setup instructions that work on my machine in the order they are written
 **So that** the first thing I see is the product and not a stack trace
 

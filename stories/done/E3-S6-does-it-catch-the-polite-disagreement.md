@@ -145,7 +145,7 @@ decoy written first, and six unsettled positions. `verify-labels` **19/19**, wit
 pins and a separate pin on the implicit count.
 
 **Part 2: C4.** `evals/cases/C4-ambiguity-detection.md` + `evals/harness/cases/C4.mjs`,
-registered in the stranger. Two hard rules, four reported-with-no-threshold rows, the third
+registered in the grader. Two hard rules, four reported-with-no-threshold rows, the third
 verdict, and a control that moves it in both directions.
 
 | | run 2 | run 3 | run 4 |

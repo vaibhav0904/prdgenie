@@ -1,6 +1,6 @@
 # E9-S1: An export that cannot leak
 
-**As a** submitter
+**As** the person publishing this
 **I want** the workflow export to fail loudly rather than ship a credential
 **So that** the one irreversible mistake in this release is impossible rather than unlikely
 
@@ -62,7 +62,7 @@ label a release has no reason to carry.
 **"Strip every credential reference" would have broken the product.** n8n binds a node to a
 credential through that block, and `provision-internal-credential.mjs` deliberately uses a
 *fixed* id (`prdgenieInternalKey`) so a stranger's import binds. Removing it protects a string
-this repository publishes on purpose and breaks the stranger flow.
+this repository publishes on purpose and breaks the run-it-yourself flow.
 
 So the rule is **normalise, not delete**, and the allow-list is **derived**: scraped from the
 provisioning scripts' own `CRED_ID` and `CRED_TYPES`, so a provider added tomorrow is handled

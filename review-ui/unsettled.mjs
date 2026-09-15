@@ -69,7 +69,7 @@ const spansOverlap = (a, b) => a.start_char < b.end_char && b.start_char < a.end
  *
  * Overlap is by citation span, the rule ADR 0008 already uses for matching. It is
  * re-implemented in this file rather than imported from the eval harness on purpose: the
- * product must not depend on the stranger.
+ * product must not depend on the grader.
  */
 export function reconcile(requirements, positions) {
   const positionSpans = (positions ?? []).map((p) => ({

@@ -42,7 +42,7 @@
 ## DONE — 2026-09-02. C3 exists, is green three times, and prints what it cannot fail on
 
 `evals/cases/C3-structure-and-determinism.md` + `evals/harness/cases/C3.mjs`, registered
-in the stranger.
+in the grader.
 
 | | run 1 | run 2 | run 3 |
 |---|---|---|---|

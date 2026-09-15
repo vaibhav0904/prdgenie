@@ -1,6 +1,6 @@
 # E9-S4: Five minutes, including the failures
 
-**As a** stranger
+**As** someone new to this project
 **I want** to watch the system handle a document it cannot use
 **So that** I can tell the difference between a demo and a product
 

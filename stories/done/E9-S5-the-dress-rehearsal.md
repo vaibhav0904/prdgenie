@@ -1,6 +1,6 @@
 # E9-S5: The dress rehearsal
 
-**As a** submitter
+**As** the person publishing this
 **I want** the whole thing performed once, end to end, before any of it is sent
 **So that** the first person to run it from scratch is me and not the stranger
 
@@ -11,7 +11,7 @@
 - [ ] End to end on **≥5 documents across ≥3 doc types**.
 - [ ] **Export hygiene green**, with its negative control run once.
 - [ ] The run-it-yourself README followed **verbatim**, from a fresh clone, against a fresh n8n import.
-- [ ] The release checklist completed and dated: demo, deck, video, export, Q1, Q2.
+- [ ] The release checklist completed and dated: demo, deck, video, export, problem write-up, charter.
 - [ ] **Anything that fails becomes a BUG card**, not a note to self and not a quick fix
       applied mid-rehearsal.
 
@@ -39,12 +39,12 @@
 
 | Criterion | Result |
 |---|---|
-| Clean database → produce all fixtures | **NOT DONE.** Reason recorded in `deliverables/RELEASE.md`: the figures on slide 7 describe this database, and emptying it tonight leaves the deck quoting numbers that no longer exist. Backed up to `data/backup/` first; the rehearsal ran against the real one |
+| Clean database → produce all fixtures | **NOT DONE.** Reason recorded in the release checklist of the day (since removed): the figures on slide 7 describe this database, and emptying it tonight leaves the deck quoting numbers that no longer exist. Backed up to `data/backup/` first; the rehearsal ran against the real one |
 | **All six cases pass three times, spread published, not the best run** | **C1: PASS ×2, FAIL ×1.** C2, C3, C4, C6: PASS ×3. C5 has no dated result and did not contribute |
 | ≥5 documents across ≥3 doc types | **green** — 2,301 documents across transcript, notes, email, feature_brief |
 | Export hygiene green, control run once | **green** — PASS, and its control 10/10 |
 | README followed verbatim from a fresh clone | **NOT DONE — deferred by Vaibhav** |
-| Release checklist completed and dated | **done** — `deliverables/RELEASE.md` |
+| Release checklist completed and dated | **done** — the release checklist of the day, since removed |
 | **Anything that fails becomes a BUG card** | **BUG-068 filed.** No fix applied mid-rehearsal |
 
 ### What the spread said

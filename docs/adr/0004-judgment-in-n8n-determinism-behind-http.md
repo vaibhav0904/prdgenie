@@ -15,9 +15,9 @@ Alternatives:
 
 - **Everything in n8n Code nodes** — disqualified: the RICE recomputation check (C3) would
   have to reimplement the scoring logic to test it, which tests a copy, not the code.
-- **Everything in code, n8n as a thin webhook wrapper** — disqualified against the rubric
-  and against the point of building it this way. It is the better engineering answer for a production
-  system and that is worth conceding openly; here the workflow *is* a deliverable.
+- **Everything in code, n8n as a thin webhook wrapper** — disqualified against the point of building it
+  this way. It is the better engineering answer for a production
+  system and that is worth conceding openly; here the workflow *is* part of the product.
 - **A shared JS file imported by both** — disqualified: n8n Code nodes cannot import
   project files without mounting and a restart, which makes the shared file a deployment
   problem instead of a boundary.

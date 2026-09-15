@@ -2,7 +2,7 @@
 
 **As a** builder
 **I want** to push all nine fixtures through the same door a PM uses, with one command
-**So that** grading always describes a run that actually happened, and never a run the stranger produced for itself
+**So that** grading always describes a run that actually happened, and never a run the grader produced for itself
 
 ## Acceptance criteria
 

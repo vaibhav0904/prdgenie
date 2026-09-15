@@ -78,7 +78,7 @@ rhetorical.
 
 - **The harness must not call a model provider**, for any purpose including matching
   (ADR 0004, ADR 0008). It replays through n8n and grades from the database. A single
-  provider call inside the stranger would make the headline accuracy figure a model's
+  provider call inside the grader would make the headline accuracy figure a model's
   opinion.
 - **Two doors now exist earlier than planned.** The webhook door was originally scoped to
   E5, but the harness needs a programmatic entry point, and having it drive the n8n Form

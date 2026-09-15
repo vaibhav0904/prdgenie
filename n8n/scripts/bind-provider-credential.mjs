@@ -33,7 +33,7 @@ const WORKFLOW = 'n8n/workflows/WF0-llm-call.json';
 const LOCAL_DIR = 'n8n/workflows.local';
 const OVERRIDE = `${LOCAL_DIR}/WF0-llm-call.json`;
 // BOTH providers (E7-S5). WF0 is the only workflow that holds a provider credential, and
-// since the judge sweep it holds two of them: the doer's and the stranger's. Binding one and
+// since the judge sweep it holds two of them: the doer's and the judge's. Binding one and
 // forgetting the other is the same failure as binding neither — an id that points at nothing
 // on a fresh instance, whose only symptom is every call of that kind failing.
 const CRED_TYPES = [

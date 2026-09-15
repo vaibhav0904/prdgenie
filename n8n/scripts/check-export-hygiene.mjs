@@ -19,7 +19,7 @@
 //   4. pinData                 THE ONE NOBODY LOOKS FOR. Pinning a node in the n8n editor
 //                              embeds that run's data in the workflow JSON — real source
 //                              documents, verbatim, inside a file that reads as configuration.
-//   5. localhost/private hosts reported, not failed: the strangers' README tells them to run
+//   5. localhost/private hosts reported, not failed: the run-it-yourself README tells people to run
 //                              locally, so `localhost` is correct here and a private LAN
 //                              address is worth a look.
 //
@@ -80,7 +80,7 @@ export function envValues(path = '.env') {
  * credential by id, and `provision-internal-credential.mjs` deliberately creates its credential
  * with a FIXED id (`prdgenieInternalKey`) precisely so the committed workflows can name it and
  * still import on a stranger's machine. Removing that reference would break the documented
- * stranger flow in the name of protecting a string this repository publishes on purpose.
+ * run-it-yourself flow in the name of protecting a string this repository publishes on purpose.
  *
  * What must not ship is an id n8n GENERATED on one instance — `Xk7QpL2mNb9RtVwZ` is a handle
  * into Vaibhav's n8n and points at nothing anywhere else. `bind-provider-credential.mjs` exists
@@ -210,7 +210,7 @@ if (import.meta.url === `file://${process.argv[1].replace(/\\/g, '/')}`
 
   const all = files.flatMap((f) => scan(f, readFileSync(join(DIR, f), 'utf8')));
 
-  // Reported, never failed: the strangers run this locally, so a localhost URL is correct.
+  // Reported, never failed: people run this locally, so a localhost URL is correct.
   const local = files.flatMap((f) => {
     const text = readFileSync(join(DIR, f), 'utf8');
     return [...text.matchAll(/https?:\/\/(?:localhost|127\.0\.0\.1|host\.docker\.internal|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+)[:\d/]*/g)]

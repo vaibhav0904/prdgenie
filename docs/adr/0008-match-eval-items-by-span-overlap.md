@@ -15,7 +15,7 @@ Alternatives:
   charts as PNG" versus "PNG export for dashboard charts" is the same requirement and
   would score as both a miss and a false positive, punishing the system twice for
   phrasing.
-- **An LLM judge deciding equivalence** — disqualified by the kit's rule that the grader is
+- **An LLM judge deciding equivalence** — disqualified by this project's rule that the grader is
   never the doer and that judge scores are monitoring, not ground truth. It is the most
   accurate matcher available and that is worth conceding; using it would make the headline
   accuracy figure a model's opinion, which is precisely the claim this project refuses to
@@ -48,7 +48,7 @@ defect and is scored as one.
   the passage the label did not mark, and score as a miss. Labels therefore list *every*
   region a requirement was stated in, and this is a documented labeling obligation.
 - **Accepted cost:** writing labels is slower, since each needs its regions marked. Paid
-  once, before any tuning, which is the order the kit requires anyway.
+  once, before any tuning, which is the order this project requires anyway.
 - Forces the label format to store regions, and forces labels to be written against the
   final redacted `raw_text` so offsets line up.
 

@@ -27,7 +27,7 @@ the README at all: `host.docker.internal` means nothing there, and neither does 
 
 `check-readme-links` proves the README points at things that exist. It does not prove that a
 sentence about a setting is true. The E9-S2 walk-through from a fresh clone, which would have
-found this, was deferred (RELEASE.md says so).
+found this, was deferred (the release checklist of the day said so).
 
 ## Fixed
 

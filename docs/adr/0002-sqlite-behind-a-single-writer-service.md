@@ -17,7 +17,7 @@ Alternatives:
   most of that with a one-file database and a bundled read-only query script.
 - **n8n's own static data / a Google Sheet** — disqualified: no constraints, no triggers,
   no transactional writes; the gate would be a convention again.
-- **Postgres in Docker** — disqualified on stranger setup cost. It wins on concurrency and
+- **Postgres in Docker** — disqualified on setup cost for someone trying it fresh. It wins on concurrency and
   on being the honest production answer, and `assumptions.md` records that swap.
 - **Letting n8n write the database directly** — disqualified: multiple writers means the
   transition rules live in whichever node ran last.

@@ -415,7 +415,7 @@ export function caveat(forced) {
 //
 // M2 and M5 are meaningless without C1's recall beside them, and C1 lives in the eval archive,
 // not in SQLite. This reads the newest recorded C1 result rather than recomputing anything:
-// the stranger owns that number, and a second implementation of it here would be exactly the
+// the grader owns that number, and a second implementation of it here would be exactly the
 // duplicate-of-a-definition problem this module exists to avoid.
 //
 // It returns null when no run has ever been graded, and the caller MUST refuse to render the

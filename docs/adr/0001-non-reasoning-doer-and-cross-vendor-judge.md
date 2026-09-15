@@ -17,7 +17,7 @@ Alternatives:
   multi-step inference. They would genuinely be better at the clustering and delta steps,
   where taxonomy judgment is real; that is conceded, and if C4 or C5 sit near their
   thresholds this ADR should be amended rather than the thresholds lowered.
-- **One vendor for both doing and judging** — disqualified by the kit's rule that the
+- **One vendor for both doing and judging** — disqualified by this project's rule that the
   grader is never the doer: a model marking its own family's work shares its blind spots,
   and an agreement score would then measure style, not truth.
 - **A local model (Ollama)** — disqualified by structured-output reliability at the

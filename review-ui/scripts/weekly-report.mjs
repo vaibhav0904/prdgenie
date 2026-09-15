@@ -1,5 +1,5 @@
 // Writes one week's report. WF5 calls the service; this is the same code by hand, so a
-// stranger can produce the artefact without n8n running.
+// newcomer can produce the artefact without n8n running.
 //
 // Usage:
 //   .\run.cmd review-ui\scripts\weekly-report.mjs                 this week

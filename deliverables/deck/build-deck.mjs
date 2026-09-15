@@ -745,6 +745,8 @@ ${cards}
     'stories done': done.length,
     'bug cards closed': done.filter((f) => f.startsWith('BUG-')).length,
     'open bug cards': backlog.filter((f) => f.startsWith('BUG-')).length,
+    // ADR 0000 is the template and records nothing (BUG-087).
+    'recorded decisions': md('docs/adr').filter((f) => /^\d{4}-/.test(f) && !f.startsWith('0000-')).length,
   };
   const text = JSON.stringify(SLIDES);
   const claims = [
@@ -752,6 +754,7 @@ ${cards}
     [/(\d+) closed, (?:\d+) open and written down/, 'bug cards closed'],
     [/<strong>(\d+) open bug cards/, 'open bug cards'],
     [/\d+ closed, (\d+) open and written down/, 'open bug cards'],
+    [/(\d+) recorded decisions/, 'recorded decisions'],
   ];
   const wrong = [];
   for (const [re, key] of claims) {

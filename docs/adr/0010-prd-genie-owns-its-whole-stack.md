@@ -126,7 +126,7 @@ argument for guesting rested on "an n8n is already running on 5678 and it alread
 OpenAI and Gemini credentials". Neither half is true any more.
 
 **Decision.** `docker-compose.yml` in this repo becomes the primary path rather than the
-stranger fallback, and moves from port 5679 to **5678** — now unclaimed, and the port every
+fallback for anyone without one, and moves from port 5679 to **5678** — now unclaimed, and the port every
 `.env`, doc and UAT card already names. One documented setup instead of two. The container
 is `n8n-local`; the old name is swept from scripts and cards, and left intact in dated
 records and in this ADR, which is history.

@@ -56,7 +56,7 @@ scheduled report going from PDF-only to *PDF or CSV, twenty recipients* — come
 about scheduled reports beside the one it meant to change. Both runs, identically.
 
 **That finding is recorded on E6-S5's card rather than as a BUG card, deliberately.** The case
-that grades kinds does not exist yet, and filing a defect against a prompt whose stranger is the
+that grades kinds does not exist yet, and filing a defect against a prompt whose grader is the
 next story would put the fix before the measurement — the one ordering this project does not
 allow. It is written where the person building C5 reads first, with the warning that this is
 the **kind-confusion family** (BUG-030/037), where prompt edits have cost the most and

@@ -72,7 +72,7 @@ function attempt(what, sql, params) {
     line('');
     line('  *** IT WENT THROUGH. The trigger is missing or has been altered. ***');
     line('      The write was rolled back, so nothing changed — but the gate this project is');
-    line('      built around is NOT THERE. Do not demo this. Do not submit this.');
+    line('      built around is NOT THERE. Do not demo this. Do not ship this.');
   }
   line();
   results.push({ what, refused });

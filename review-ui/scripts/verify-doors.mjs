@@ -44,7 +44,7 @@ function countDocs(channel) {
 }
 
 /**
- * The form door answers the browser the moment it accepts the release and finishes the
+ * The form door answers the browser the moment it accepts the submission and finishes the
  * workflow afterwards, so reading the database straight after the POST races the insert.
  * Waiting for the row is the honest fix; sleeping a fixed interval and hoping is not.
  */

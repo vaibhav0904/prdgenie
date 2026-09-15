@@ -1,4 +1,4 @@
-# Q2 — Program Charter: PRD Genie (Pilot)
+# Program Charter: PRD Genie (Pilot)
 
 **NeuronForge Technologies · Product & Innovation · 2026-09-01 · Owner: Vaibhav, AI PM**
 

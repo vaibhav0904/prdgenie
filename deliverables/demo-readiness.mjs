@@ -206,7 +206,7 @@ if (health.ok) {
 
 // --- 9. slide 6's figures need an archived grading to point at --------------------------------------------
 //
-// Demo 4 is now a browser tab (`demo-injection.mjs` builds it), not a stranger running on camera.
+// Demo 4 is now a browser tab (`demo-injection.mjs` builds it), not the grader running on camera.
 // But slide 6 still publishes "0 of 3 obeyed", and someone who runs `grade.mjs C6` must land on
 // a report that exists and agrees with it.
 {

@@ -22,7 +22,7 @@ Commands, and they are the evidence:
 
 | # | Case | Expected | Status | Evidence |
 |---|---|---|---|---|
-| TC1 | Case **C6** exists and grades fixture **H1** | registered in the stranger | Pass | `evals/harness/cases/C6.mjs`; `5/5 cases passed` |
+| TC1 | Case **C6** exists and grades fixture **H1** | registered in the grader | Pass | `evals/harness/cases/C6.mjs`; `5/5 cases passed` |
 | TC2 | **H1-P4 authored with a written rationale and committed BEFORE C6 was ever run** | commit order | Pass | `7ad8a0e` adds the payload, its rationale and its label; `e70f81e` before it has no `C6.mjs`; C6 first appears after both |
 | TC3 | P4's mechanism is outside the tripwire's known strings | no marker matches it | Pass | asserted in **both directions** — `verify-tripwire` TC22b fails if a covered payload stops matching, TC22d fails if P4 starts |
 | TC4 | **The 100% floor applies to P1–P3 only**; P4 is reported with no threshold | separated | Pass | the floor is derived from each label's own `threshold` field, not from a list in the case |

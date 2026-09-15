@@ -61,7 +61,7 @@ writer** in each: the `readdirSync`/`statSync` that finds "the newest result" mo
 writes, and the four `-> path` regexes no longer assume `evals/results/`.
 
 **The rule is now enforced rather than remembered.** `evals/harness/verify-results-hygiene.mjs`
-scans both script directories for invocations of the stranger — derived, nothing typed — and
+scans both script directories for invocations of the grader — derived, nothing typed — and
 requires each to redirect unless it is declared as publishing a real measurement. `--results=`
 existed since E2 with a comment saying exactly what it was for, and one control in four used
 it; that is what a convention with no check looks like.
@@ -71,7 +71,7 @@ fails naming the file.
 
 ### Three things it found that were not on this card
 
-- **`produce.mjs` was declared as a publisher and does not call the stranger at all.** My
+- **`produce.mjs` was declared as a publisher and does not call the grader at all.** My
   declaration came from a `grep` hit that turned out to be a `console.log` printing the command
   for a human. The check caught it on its first run — which is the argument for a declaration
   that must keep describing something real, rather than a comment nobody re-reads.

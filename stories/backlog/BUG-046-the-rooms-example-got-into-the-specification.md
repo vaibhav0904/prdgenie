@@ -71,7 +71,7 @@ Two consequences, both acted on:
   published database that is **false**, and a stranger running the sweep would have seen 73/73 and
   wondered what the slide meant. Slide 9 now describes the **intermittency** rather than the
   instance, which is the truer and more interesting claim anyway.
-- `deliverables/RELEASE.md` no longer lists this as a standing red. It lists it as a defect
+- The release checklist of the day (since removed) stopped listing this as a standing red. It listed it as a defect
   that comes and goes, which is what it is.
 
 **The lesson, and it is the same one twice:** a check that reads a re-generated population cannot

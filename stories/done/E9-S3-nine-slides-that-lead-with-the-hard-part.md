@@ -1,6 +1,6 @@
 # E9-S3: Nine slides that lead with the hard part
 
-**As a** stranger
+**As** someone new to this project
 **I want** the deck to open with the question the product answers
 **So that** every design decision after it has a reason I can already see
 

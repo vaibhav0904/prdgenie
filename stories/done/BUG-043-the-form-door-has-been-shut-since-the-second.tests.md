@@ -30,7 +30,7 @@ the same mistake impossible to repeat rather than merely corrected.
    distraction**: it is what a hand-probe hits first, and it is not what was wrong.
 3. **A correct multipart post returned `{"status":200}` and stored nothing.** n8n's execution
    record settled it: every field arrived **`null`**, keys present, values empty.
-4. **n8n binds form releases by index — `field-0`, `field-1` — never by label.** The checker
+4. **n8n binds form submissions by index — `field-0`, `field-1` — never by label.** The checker
    posted four indexed fields written when the form had four. **E4-S6 inserted "Who wrote
    this?" as the third.** Everything below it shifted: the document text went into the
    authorship dropdown, and the required `Text` field received `''`.
