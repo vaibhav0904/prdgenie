@@ -217,7 +217,7 @@ export const SLIDES = [
         { on: 'Slide 2. Point at the first box as you start.', say: 'This is the whole system. You paste a meeting into a form. A transcript, your notes, an email, it does not matter. We treat any document the same way.' },
         { on: 'Point at the second box.', say: 'Out comes a list of requirements. Beside every requirement is the sentence somebody actually said, and you can click it. Think of a footnote you can click.' },
         { on: 'Point at &ldquo;you&rdquo;, then sweep right.', say: 'Everything up to here is the AI\'s draft. Nothing after this happens without you. You check each line, you sign, and only then is it approved. And when there is a second meeting, it does not write a second document. It updates this one.' },
-        { say: 'I will show you each step on the real thing, with a real meeting. ForgeSight, a dashboards product. Five people: Marcus, Priya, Dana, Wei and Tom.' },
+        { say: 'I will show you each step on the real thing, with a sample meeting. ForgeSight, a dashboards product. Five people: Marcus, Priya, Dana, Wei and Tom.' },
       ],
     },
   },
@@ -465,12 +465,12 @@ export const SLIDES = [
       {
         type: 'points',
         items: [
-          ['<strong>The right answers were written by hand first</strong>', 'for ten real meetings, before the AI ever tried. They have never been edited to make a test pass. When a test fails, the rule is: find out why, write it down, undo the change.'],
+          ['<strong>The right answers were written by hand first</strong>', 'for ten invented meetings, before the AI ever tried. They have never been edited to make a test pass. When a test fails, the rule is: find out why, write it down, undo the change.'],
           ['<strong>73 automatic tests run every time</strong>', 'and 32 of the 51 checkers have a control &mdash; a script that breaks the thing on purpose and requires the test to go red. 19 do not, and they get named on every run. Rehearsing this video turned three tests red; what they found is fixed.'],
           ['<strong>No number on these slides was written by the AI</strong>', 'every figure is counted from the stored data. A second AI, from a different vendor, judges quality afterwards and gates nothing.'],
         ],
       },
-      { type: 'note', text: 'Built one story at a time: 112 stories done, 10 recorded decisions, and every defect found mid-story became its own card. 64 closed, 24 open and written down.' },
+      { type: 'note', text: 'Built one story at a time: 115 stories done, 10 recorded decisions, and every defect found mid-story became its own card. 67 closed, 24 open and written down.' },
     ],
     command: {
       cmd: '.\\run.cmd check-all.mjs',

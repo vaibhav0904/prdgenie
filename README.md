@@ -142,7 +142,9 @@ about 150 characters works without the setting (BUG-083).
 ## The deck and the film are generated too
 
 Both the nine-slide deck and the six-minute demo video in this project are **produced entirely by
-AI, end to end.** That is not a footnote; it is part of the point.
+AI, end to end** — the slides, the script, the voiceover and the footage. My part was review:
+checking the content, going through the script, and watching the final cut. That is not a
+footnote; it is part of the point.
 
 - The deck is not a slide file. It is [`deliverables/deck/slides.mjs`](deliverables/deck/slides.mjs)
   — one source that builds both the presentation and the presenter's run sheet, with a guard that
@@ -156,7 +158,7 @@ AI, end to end.** That is not a footnote; it is part of the point.
 
 The whole application was built the same way: one story at a time, a test plan before any code,
 and every defect found mid-story written up as its own card instead of being folded into the
-work. **112 stories done, 10 recorded decisions, 64 bug cards closed, 24 open.** The record is in
+work. **115 stories done, 10 recorded decisions, 67 bug cards closed, 24 open.** The record is in
 [`stories/`](stories/) and [`stories/STATUS.md`](stories/STATUS.md), including the parts that went
 badly.
 

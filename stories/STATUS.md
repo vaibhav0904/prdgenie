@@ -1,4 +1,4 @@
-# Status — last updated 2026-09-15 (an audit before the repository is shared found the scrub had written nonsense into the prose (BUG-085), a garbled test plan (BUG-086) and a wrong decision count (BUG-087), all closed; BUG-081 to 084 recorded here, which they had not been; BUG-077 open)
+# Status — last updated 2026-09-15 (an audit before the repository is shared found the scrub had written nonsense into the prose (BUG-085), a garbled test plan (BUG-086) a wrong decision count (BUG-087) a film launcher that never ran (BUG-088) a render fix that had not fixed it (BUG-089) and a film that called invented meetings real (BUG-090), all closed; BUG-081 to 084 recorded here, which they had not been; BUG-077 open)
 
 The live dashboard. `stories/README.md` is the (static) process description —
 this file is the current state. Updated at every `/prd`, `/story`, `/testplan`,
@@ -44,6 +44,21 @@ for an instance with no Docker shell, rewriting addresses, ids and credential bi
 **BUG-079 — the README demo began at an "Ingest tab" the UI does not have. MINOR, closed.**
 Same walk-through. Step 1 now starts at the form with `show-fixture.mjs T1`; step 4 says
 `grade.mjs C6` needs a produced run first.
+
+**BUG-090 — the film called invented meetings real. MAJOR, closed.**
+Found 2026-09-15 reading slide 8's contact still: "ten real meetings" on screen and "a real meeting"
+spoken on slide 2, while the README says no meeting is real. Now "invented" and "sample"; the one line
+re-recorded and the film re-rendered.
+
+**BUG-089 — closing BUG-084 did not fix the render; the cause was load. MAJOR, closed.**
+Found 2026-09-15: the next full render failed on the same clip with BUG-084's keyframes in place. A new
+`scripts/seek-test.ts` renders one beat N times: 3 of 5 and 3 of 6 failed under CPU load, 0 of 8 idle,
+and 0 compositor failures in 6 at concurrency 2 under heavier load. `finalize.ts` renders at 2.
+
+**BUG-088 — the film project's launcher never launched anything. MAJOR, closed.**
+Found 2026-09-15 re-rendering the film: `prdgenie-video/run.cmd` had been written through a heredoc,
+so the Node path was split by a newline and `node_modules\tsx` held a tab, since its first commit.
+Every render had called Node directly. Rewritten and verified through the README's own command.
 
 **BUG-087 — the decision count counted the template. MINOR, closed.**
 Found 2026-09-15 re-checking the README's figures: "11 recorded decisions" included
