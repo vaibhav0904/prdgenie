@@ -256,7 +256,7 @@ excluded.
 | Setting it up when n8n is hosted, and the fresh-copy walk-through | `deliverables/SETUP.md` |
 | The nine slides | `deliverables/deck/presentation.html` |
 | The presenter's run sheet | `deliverables/deck/presenter.html` |
-| The demo video, 6:25 | Not committed: 1080p is above GitHub's per-file limit, and the film is a build output rather than a source. It is generated from this deck's run sheet by the sibling repository *prdgenie-video*, which renders it into its own *out* folder with a render.json recording the versions filmed and the narrator (Sarvam bulbul:v3, speaker rahul). That project needs npm packages and this one has none (ADR 0009), which is why it lives beside this repository rather than in it. Every product moment in the film is footage of the live app, not a mock-up. |
+| The demo video, 6:25 | `deliverables/deck/prd-genie-demo.mp4`, beside the slides it was made from. Generated from this deck's run sheet by the sibling repository *prdgenie-video* (narrator: Sarvam bulbul:v3, speaker rahul). That project needs npm packages and this one has none (ADR 0009), which is why the generator lives beside this repository and only the film is here. Every product moment in the film is footage of the live app, not a mock-up. |
 | The problem, and the program charter | `deliverables/problem-and-approach.md`, `deliverables/program-charter.md` |
 | The workflows | `n8n/workflows/*.json` — credential-free, checked by `check-export-hygiene` |
 | Prompts | `n8n/prompts/*.md` — the source of truth, hashed into the workflows |

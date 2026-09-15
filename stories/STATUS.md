@@ -53,12 +53,12 @@ re-recorded and the film re-rendered.
 **BUG-089 — closing BUG-084 did not fix the render; the cause was load. MAJOR, closed.**
 Found 2026-09-15: the next full render failed on the same clip with BUG-084's keyframes in place. A new
 `scripts/seek-test.ts` renders one beat N times: 3 of 5 and 3 of 6 failed under CPU load, 0 of 8 idle,
-and 0 compositor failures in 6 at concurrency 2 under heavier load. `finalize.ts` renders at 2.
+and 0 compositor failures in 6 at concurrency 2 under heavier load. `finalize.ts` renders at 2. **Not published:** held on a local branch until tested (see the card).
 
 **BUG-088 — the film project's launcher never launched anything. MAJOR, closed.**
 Found 2026-09-15 re-rendering the film: `prdgenie-video/run.cmd` had been written through a heredoc,
 so the Node path was split by a newline and `node_modules\tsx` held a tab, since its first commit.
-Every render had called Node directly. Rewritten and verified through the README's own command.
+Every render had called Node directly. Rewritten and verified through the README's own command. **Not published:** held until tested.
 
 **BUG-087 — the decision count counted the template. MINOR, closed.**
 Found 2026-09-15 re-checking the README's figures: "11 recorded decisions" included

@@ -146,6 +146,9 @@ AI, end to end** — the slides, the script, the voiceover and the footage. My p
 checking the content, going through the script, and watching the final cut. That is not a
 footnote; it is part of the point.
 
+**Watch it:** [`deliverables/deck/prd-genie-demo.mp4`](deliverables/deck/prd-genie-demo.mp4) (6:25), next to
+[the nine slides](deliverables/deck/presentation.html) it was made from.
+
 - The deck is not a slide file. It is [`deliverables/deck/slides.mjs`](deliverables/deck/slides.mjs)
   — one source that builds both the presentation and the presenter's run sheet, with a guard that
   refuses to publish if a count on a slide disagrees with what is actually in the repository.

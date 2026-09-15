@@ -30,6 +30,13 @@ Knowing the trap did not stop a file being written through it.
 gives: `.\run.cmd scripts/storyboard.ts` from PowerShell in the project folder, which built the
 storyboard (27 beats, 26 spoken). The render that followed ran every step through it.
 
+## Release
+
+**Not published yet.** The change was pushed to *prdgenie-video* on 2026-09-15 and reverted the same
+day (`c22149d`): it had been tested on one machine only, and that repository takes nothing that has
+not been tested across. It waits on the local branch `testing-render-fixes`. Until it is released,
+the public repository still carries the defect this card describes.
+
 ## Still open
 
 A one-off scan of every tracked text file in both repositories — control characters other than tab,

@@ -47,9 +47,16 @@ asking the compositor for a frame of the same clips.
   beside the constant.
 - `capture.ts`'s comment no longer claims keyframes fixed the failure. The flags stay: they are cheap
   and keep every seek short.
-- `scripts/seek-test.ts` stays in the repository as the instrument, so the next person to change the
-  render can measure it rather than hope.
+- `scripts/seek-test.ts` is added as the instrument, so the next person to change the render can
+  measure it rather than hope.
 - The film was re-rendered end to end at concurrency 2 and completed.
+
+## Release
+
+**Not published yet.** The change was pushed to *prdgenie-video* on 2026-09-15 and reverted the same
+day (`c22149d`): it had been tested on one machine only, and that repository takes nothing that has
+not been tested across. It waits on the local branch `testing-render-fixes`. Until it is released,
+the public repository still carries the defect this card describes.
 
 ## Lesson
 
